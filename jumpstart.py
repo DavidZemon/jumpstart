@@ -1,12 +1,18 @@
 #!/usr/bin/python3
-import os
 import argparse
+import os
 import re
+import shutil
+from typing import Callable, Dict
 
-from string import Template
-from typing import Union, Callable, Type, Dict
+import django
+from django.conf import settings
+from django.template import Template, Context
+
+from option import Option
 
 TEMPLATES_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'templates')
+OUTPUT_DIR = os.path.join(os.getcwd(), 'generated') if 'jumpstart.py' in os.listdir('.') else os.getcwd()
 
 
 def generate_type_checker(validator: Callable[[str], bool]):
@@ -15,32 +21,8 @@ def generate_type_checker(validator: Callable[[str], bool]):
             return value
         else:
             raise argparse.ArgumentTypeError('{0} is an invalid option.'.format(value))
+
     return f
-
-
-class Option(object):
-    def __init__(self, name: str, short_name: Union[str, None], default_value, cli_help: str, interactive_prompt: str,
-                 validator: Callable[[str], any] = None, value_type: Type = None):
-        self.long_name = name
-        self.short_name = short_name
-        self.default_value = default_value
-        if value_type is not None:
-            self.type = value_type
-        else:
-            self.type = type(self.default_value)
-        self.value = default_value
-        self.cli_help = cli_help
-        if default_value is not None:
-            if isinstance(default_value, bool):
-                if default_value:
-                    self.interactive_prompt = '{0} [Y/n]: '.format(interactive_prompt)
-                else:
-                    self.interactive_prompt = '{0} [y/N]: '.format(interactive_prompt)
-            else:
-                self.interactive_prompt = '{0} [{1}]: '.format(interactive_prompt, default_value)
-        else:
-            self.interactive_prompt = '{0}: '.format(interactive_prompt)
-        self.validator = validator
 
 
 OPTIONS = [
@@ -52,13 +34,28 @@ OPTIONS = [
 
 
 def run() -> None:
+    settings.configure(TEMPLATES=[{'BACKEND': 'django.template.backends.django.DjangoTemplates', 'APP_DIRS': False}])
+    django.setup()
+
     args = parse_args()
     final_options = get_options(args)
 
-    with open('templates/CMakeLists.txt', 'r') as f:
-        c = f.read()
-        c = c.replace('@NAME@', final_options['name'])
-        print(c)
+    if os.path.exists(OUTPUT_DIR):
+        shutil.rmtree(OUTPUT_DIR)
+
+    for root, dirs, filenames in os.walk(TEMPLATES_DIR):
+        for filename in filenames:
+            abs_path_in = os.path.join(root, filename)
+            relative_to_templates = abs_path_in[len(TEMPLATES_DIR) + 1:]
+            with open(abs_path_in, 'r') as f:
+                t = Template(f.read())
+
+            abs_path_out = os.path.join(OUTPUT_DIR, relative_to_templates)
+            abs_path_out = adjust_output_filename(abs_path_out, final_options)
+            abs_dir_out = os.path.dirname(abs_path_out)
+            os.makedirs(abs_dir_out, exist_ok=True)
+            with open(abs_path_out, 'w') as f:
+                f.write(t.render(Context(final_options)))
 
 
 def parse_args() -> argparse.Namespace:
@@ -108,6 +105,13 @@ def get_options(args: argparse.Namespace) -> Dict[str, any]:
             final_options[dest] = args.__getattribute__(dest)
 
     return final_options
+
+
+def adjust_output_filename(unmolested: str, options: Dict[str, any]) -> str:
+    result = unmolested
+    for k, v in options.items():
+        result = result.replace('@{0}@'.format(k), str(v))
+    return result
 
 
 if '__main__' == __name__:
