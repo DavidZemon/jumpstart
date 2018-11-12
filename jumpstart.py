@@ -34,8 +34,9 @@ OPTIONS = [
            'Project name', generate_regex_checker('[A-Za-z]+[A-Za-z\d_-].*')),
     Option('description', 'd', 'FIXME: This is my cool new project', 'One-sentence description of the project',
            'Description'),
-    Option('contact', 'c', 'Fix Me <fix.me@redlion.net>', 'Contact name and email address for package maintainer',
-           'Contact name', generate_regex_checker('[A-Za-z]+ [A-Za-z]+ <[a-z\d\.]+@redlion\.net>')),
+    Option('contact', 'c', 'First Last <first.last@redlion.net>',
+           'Contact name and email address for package maintainer', 'Contact name',
+           generate_regex_checker('[A-Za-z]+ [A-Za-z]+ <[a-z\d\.]+@redlion\.net>')),
     Option('cxx', None, True, 'Disable C++ support (C++ is always enabled for unit tests)',
            'Should C++ support be enabled in the primary targets (C++ is always enabled for unit tests)'),
     Option('library', 'l', True, 'When enabled, a default library target will be created.',
@@ -51,6 +52,10 @@ def run() -> None:
 
     args = parse_args()
     final_options = get_options(args)
+
+    if final_options['name'].lower() == 'test':
+        raise Exception('"test" (any combination of case) is a reserved word in CMake and can not be used as a '
+                        'project name.')
 
     blacklist = get_blacklisted_files(final_options)
 
@@ -121,9 +126,12 @@ def get_options(args: argparse.Namespace) -> Dict[str, any]:
                     else:
                         final_options[dest] = response
 
-                    if dest in final_options and option.validator and not option.validator(final_options[dest]):
-                        print('"{0}" is not a valid option.'.format(final_options[dest]))
-                        del final_options[dest]
+                    if dest in final_options and option.validator:
+                        try:
+                            option.validator(final_options[dest])
+                        except argparse.ArgumentTypeError as e:
+                            print(e)
+                            del final_options[dest]
         else:
             final_options[dest] = args.__getattribute__(dest)
 
