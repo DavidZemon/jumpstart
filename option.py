@@ -13,14 +13,11 @@ class Option(object):
             self.type = type(self.default_value)
         self.value = default_value
         self.cli_help = cli_help
-        if default_value is not None:
-            if isinstance(default_value, bool):
-                if default_value:
-                    self.interactive_prompt = '{0} [Y/n]: '.format(interactive_prompt)
-                else:
-                    self.interactive_prompt = '{0} [y/N]: '.format(interactive_prompt)
+        if isinstance(default_value, bool):
+            if default_value:
+                self.interactive_prompt = '{0} [Y/n]: '.format(interactive_prompt)
             else:
-                self.interactive_prompt = '{0} [{1}]: '.format(interactive_prompt, default_value)
+                self.interactive_prompt = '{0} [y/N]: '.format(interactive_prompt)
         else:
-            self.interactive_prompt = '{0}: '.format(interactive_prompt)
+            self.interactive_prompt = '{0} [{1}]: '.format(interactive_prompt, default_value)
         self.validator = validator

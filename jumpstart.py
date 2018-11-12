@@ -72,6 +72,8 @@ def parse_args() -> argparse.Namespace:
             parser.add_argument('-' + option.short_name, '--' + option.long_name, type=option.validator,
                                 help=option.cli_help)
 
+    parser.add_argument('--defaults', action='store_true', help='Use all default. Do not prompt any questions.')
+
     return parser.parse_args()
 
 
@@ -81,26 +83,29 @@ def get_options(args: argparse.Namespace) -> Dict[str, any]:
     for option in OPTIONS:
         dest = option.long_name.replace('-', '_')
         if args.__getattribute__(dest) is None:
-            while dest not in final_options:
-                response = input(option.interactive_prompt)
-                if '' == response:
-                    if option.default_value:
-                        final_options[dest] = option.default_value
+            if args.defaults:
+                final_options[dest] = option.default_value
+            else:
+                while dest not in final_options:
+                    response = input(option.interactive_prompt)
+                    if '' == response:
+                        if option.default_value:
+                            final_options[dest] = option.default_value
+                        else:
+                            print('No default value available for ' + option.long_name)
+                    elif option.type == bool:
+                        if response.lower() in ['y', 'yes', 't', 'true', '1']:
+                            final_options[dest] = True
+                        elif response.lower() in ['n', 'no', 'f', 'false', '0']:
+                            final_options[dest] = False
+                        else:
+                            print('Expected one of y, yes, n, or no.')
                     else:
-                        print('No default value available for ' + option.long_name)
-                elif option.type == bool:
-                    if response.lower() in ['y', 'yes', 't', 'true', '1']:
-                        final_options[dest] = True
-                    elif response.lower() in ['n', 'no', 'f', 'false', '0']:
-                        final_options[dest] = False
-                    else:
-                        print('Expected one of y, yes, n, or no.')
-                else:
-                    final_options[dest] = response
+                        final_options[dest] = response
 
-                if dest in final_options and option.validator and not option.validator(final_options[dest]):
-                    print('"{0}" is not a valid option.'.format(final_options[dest]))
-                    del final_options[dest]
+                    if dest in final_options and option.validator and not option.validator(final_options[dest]):
+                        print('"{0}" is not a valid option.'.format(final_options[dest]))
+                        del final_options[dest]
         else:
             final_options[dest] = args.__getattribute__(dest)
 
