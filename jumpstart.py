@@ -54,8 +54,11 @@ def run() -> None:
 
     blacklist = get_blacklisted_files(final_options)
 
-    if os.path.exists(OUTPUT_DIR):
-        shutil.rmtree(OUTPUT_DIR)
+    if os.listdir(OUTPUT_DIR):
+        if OUTPUT_DIR == os.path.join(os.getcwd(), 'generated'):
+            shutil.rmtree(OUTPUT_DIR)
+        else:
+            raise Exception('Current directory MUST be empty. Please empty it or create a new directory.')
 
     for root, dirs, filenames in os.walk(TEMPLATES_DIR):
         for filename in filenames:
