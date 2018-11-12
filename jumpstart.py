@@ -54,7 +54,11 @@ OPTIONS = [
 def run() -> None:
     args = parse_args()
     final_options = get_options(args)
-    print(final_options)
+
+    with open('templates/CMakeLists.txt', 'r') as f:
+        c = f.read()
+        c = c.replace('@NAME@', final_options['name'])
+        print(c)
 
 
 def parse_args() -> argparse.Namespace:
