@@ -155,6 +155,10 @@ def get_blacklisted_files(options: Dict[str, any]) -> List[str]:
         blacklist.append('@name@-cli.h')
     if not options['cxx']:
         blacklist.append('FindGMock.cmake')
+    if not options['library']:
+        blacklist.append('test_package/@name@TestConan.cpp')
+        blacklist.append('test_package/CMakeLists.txt')
+        blacklist.append('test_package/conanfile.py')
     return blacklist
 
 
