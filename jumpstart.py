@@ -3,7 +3,7 @@ import argparse
 import os
 import re
 import shutil
-from typing import Callable, Dict
+from typing import Callable, Dict, List
 
 import django
 from django.conf import settings
@@ -15,7 +15,7 @@ TEMPLATES_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'templa
 OUTPUT_DIR = os.path.join(os.getcwd(), 'generated') if 'jumpstart.py' in os.listdir('.') else os.getcwd()
 
 
-def generate_type_checker(validator: Callable[[str], bool]):
+def generate_type_checker(validator: Callable[[str], bool]) -> Callable[[str], str]:
     def f(value: str) -> str:
         if validator(value):
             return value
@@ -25,11 +25,23 @@ def generate_type_checker(validator: Callable[[str], bool]):
     return f
 
 
+def generate_regex_checker(pattern: str) -> Callable[[str], str]:
+    return generate_type_checker(lambda s: re.match(pattern, s) is not None)
+
+
 OPTIONS = [
     Option('name', 'n', 'NewProject', 'Name of the new project (alphanumeric, dashes, and underscores only)',
-           'Project name', generate_type_checker(lambda s: re.match('[A-Za-z]+[A-Za-z\d_-].*', s) is not None)),
+           'Project name', generate_regex_checker('[A-Za-z]+[A-Za-z\d_-].*')),
+    Option('description', 'd', 'FIXME: This is my cool new project', 'One-sentence description of the project',
+           'Description'),
+    Option('contact', 'c', 'Fix Me <fix.me@redlion.net>', 'Contact name and email address for package maintainer',
+           'Contact name', generate_regex_checker('[A-Za-z]+ [A-Za-z]+ <[a-z\d\.]+@redlion\.net>')),
     Option('cxx', None, True, 'Disable C++ support (C++ is always enabled for unit tests)',
-           'Should C++ support be enabled in the primary targets (C++ is always enabled for unit tests)')
+           'Should C++ support be enabled in the primary targets (C++ is always enabled for unit tests)'),
+    Option('library', 'l', True, 'When enabled, a default library target will be created.',
+           'Should a default library target be created'),
+    Option('executable', 'e', True, 'When enabled, a default executable target will be created.',
+           'Should a default executable target be created')
 ]
 
 
@@ -40,22 +52,25 @@ def run() -> None:
     args = parse_args()
     final_options = get_options(args)
 
+    blacklist = get_blacklisted_files(final_options)
+
     if os.path.exists(OUTPUT_DIR):
         shutil.rmtree(OUTPUT_DIR)
 
     for root, dirs, filenames in os.walk(TEMPLATES_DIR):
         for filename in filenames:
-            abs_path_in = os.path.join(root, filename)
-            relative_to_templates = abs_path_in[len(TEMPLATES_DIR) + 1:]
-            with open(abs_path_in, 'r') as f:
-                t = Template(f.read())
+            if filename not in blacklist:
+                abs_path_in = os.path.join(root, filename)
+                relative_to_templates = abs_path_in[len(TEMPLATES_DIR) + 1:]
+                with open(abs_path_in, 'r') as f:
+                    t = Template(f.read())
 
-            abs_path_out = os.path.join(OUTPUT_DIR, relative_to_templates)
-            abs_path_out = adjust_output_filename(abs_path_out, final_options)
-            abs_dir_out = os.path.dirname(abs_path_out)
-            os.makedirs(abs_dir_out, exist_ok=True)
-            with open(abs_path_out, 'w') as f:
-                f.write(t.render(Context(final_options)))
+                abs_path_out = os.path.join(OUTPUT_DIR, relative_to_templates)
+                abs_path_out = adjust_output_filename(abs_path_out, final_options)
+                abs_dir_out = os.path.dirname(abs_path_out)
+                os.makedirs(abs_dir_out, exist_ok=True)
+                with open(abs_path_out, 'w') as f:
+                    f.write(t.render(Context(final_options)))
 
 
 def parse_args() -> argparse.Namespace:
@@ -109,7 +124,36 @@ def get_options(args: argparse.Namespace) -> Dict[str, any]:
         else:
             final_options[dest] = args.__getattribute__(dest)
 
+    final_options.update(get_computed_options(final_options))
+
     return final_options
+
+
+def get_computed_options(options: Dict[str, any]) -> Dict[str, any]:
+    results = {}
+
+    if options['library'] and options['executable']:
+        results['lib_target_name'] = options['name'].lower() + '-lib'
+    else:
+        results['lib_target_name'] = options['name'].lower()
+
+    if options['cxx']:
+        results['extension'] = '.cpp'
+    else:
+        results['extension'] = '.c'
+
+    return results
+
+
+def get_blacklisted_files(options: Dict[str, any]) -> List[str]:
+    blacklist = []
+    if options['executable']:
+        if not options['library']:
+            blacklist.append('@name@-cli@extension@')
+    else:
+        blacklist.append('main@extension@')
+        blacklist.append('@name@-cli@extension@')
+    return blacklist
 
 
 def adjust_output_filename(unmolested: str, options: Dict[str, any]) -> str:

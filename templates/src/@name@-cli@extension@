@@ -1,0 +1,115 @@
+/*!
+ * @file redio2_cli.c
+ * @copyright (C)2018 Red Lion Controls, Inc. All rights reserved. Red Lion, the Red Lion logo and Sixnet are registered
+ * trademarks of Red Lion Controls, Inc. All other company and product names are trademarks of their respective owners.
+ */
+
+#include <wsbu/redio2.h>
+#include <stdio.h>
+#include <getopt.h>
+#include <stdbool.h>
+#include <string.h>
+#include <stdlib.h>
+
+/*!
+ * @brief       Parses command line options.
+ *
+ *              If any invalid arguments are passed, error message will be printed to STDERR.
+ *
+ * @param[in]   argc    Number of arguments.
+ * @param[in]   argv    Array of argument values.
+ */
+void parseOptions(int argc, char* argv[]);
+
+/*!
+ * @brief       Tests a serial port for connectivity
+ *
+ *              Calls the openSerialPort() function passing in the deviceFileName as the argument and prints the result
+ *              to STDOUT.
+ *
+ * @param[in]   deviceFileName  Absolute path for the device
+ */
+void testSerialPort(const char* deviceFileName);
+
+/*!
+ * @brief       Converts the CommDriverError error code to a human readable string
+ *
+ * @param[in]   errorCode   The CommDriverError enumeration
+ *
+ * @return      A human readable string containing the interpretation of the error code
+ */
+const char* errorToString(enum CommDriverError errorCode);
+
+/*!
+ * @brief   Prints the usage to STDOUT.
+ */
+void printOptionHelp();
+
+int main(int argc, char* argv[]) {
+    parseOptions(argc, argv);
+    return 0;
+}
+
+void parseOptions(int argc, char* argv[]) {
+    struct option long_options[] = {
+        {"help",     no_argument,       0, 'h'},
+        {"testport", required_argument, 0, 't'},
+        {0,          0,                 0,   0}
+    };
+
+    opterr = 0;
+    int c;
+    int long_index = 0;
+    while ((c = getopt_long(argc, argv, "ht:", long_options, &long_index)) != -1) {
+        switch (c) {
+            case 'h':
+                printOptionHelp();
+                break;
+            case 't':
+                testSerialPort(optarg);
+                break;
+            case 0:
+                if (long_options[long_index].flag != 0) {
+                    break;
+                }
+                if (strcmp(long_options[long_index].name, "help") == 0) {
+                    printOptionHelp();
+                }
+                else if (strcmp(long_options[long_index].name, "testport") == 0) {
+                    testSerialPort(optarg);
+                }
+                break;
+            default:
+                fprintf(stderr, "Unknown option `-%c'. Use '-h' for help\n", optopt);
+                break;
+        }
+    }
+}
+
+void printOptionHelp() {
+    printf("Usage:   [option]            [Description]\n"
+           "option:  -h|--help           Show help information\n"
+           "         -t|--testport       Test a serial port connection. Ex -t /dev/ttyUSB0\n");
+}
+
+void testSerialPort(const char* deviceFileName) {
+    CommDriver* commDriver = (CommDriver*)malloc(sizeof(CommDriver));
+    printf("%s\n", errorToString(openSerialPort(commDriver, deviceFileName)));
+}
+
+const char* errorToString(enum CommDriverError errorCode) {
+    switch(errorCode) {
+        case CDE_SUCCESS:
+            return "Success";
+        case CDE_DRIVER_NO_FOUND:
+            return "Driver wasn't found";
+        case CDE_FAILED_TO_OPEN_PORT:
+            return "Failed to open port";
+        case CDE_DEVICE_NOT_TTY:
+            return "Device is not TTY";
+        case CDE_SERIAL_SETTINGS:
+            return "Error configurating serial settings";
+        default:
+            return "Unknown error code";
+    }
+}
