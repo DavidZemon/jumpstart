@@ -8,8 +8,7 @@ Instructions
 
 1. Acquire the Docker wrapper script by cloning the project
    ```
-   git clone https://github.com/wsbu/jumpstart.git
-   
+   git clone https://github.com/wsbu/jumpstart.git 
    ```
 2. Create a symlink in your `bin` directory to the Docker wrapper script
    ```
