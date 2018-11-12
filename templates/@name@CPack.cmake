@@ -11,7 +11,7 @@ set(CPACK_INSTALL_CMAKE_PROJECTS
     .
 )
 
-set(CPACK_PROJECT_URL "https://bitbucket.org/redlionstl/@NAME@")
+set(CPACK_PROJECT_URL "https://bitbucket.org/redlionstl/{{ name | lower }}")
 set(CPACK_PACKAGE_VENDOR "Red Lion Controls")
 set(CPACK_PACKAGE_CONTACT "{{ contact | safe }}")
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
