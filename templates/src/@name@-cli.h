@@ -1,15 +1,8 @@
 /*!
- * @file {{ name }}{{ extension }}
+ * @file {{ name }}-cli{{ extension }}
  *
  * @copyright (C){% now "Y" %} Red Lion Controls, Inc. All rights reserved. Red Lion, the Red Lion logo and Sixnet are registered
  * trademarks of Red Lion Controls, Inc. All other company and product names are trademarks of their respective owners.
  */
 
-#include <wsbu/{{ name }}.h>
-{% if cxx %}
-int {{ name }}::add(const int lhs, const int rhs) const {
-    return lhs + rhs;
-}{% else %}
-int add(const int lhs, const int rhs) {
-    return lhs + rhs;
-}{% endif %}
+int run ();

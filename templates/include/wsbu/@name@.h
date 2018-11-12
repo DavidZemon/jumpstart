@@ -28,7 +28,7 @@ int add (const int lhs, const int rhs);
  *
  * This is a longer description of a very useless class.
  */
-class {{ name }}; {
+class {{ name }} {
     public:
         /**
          * Add two numbers.

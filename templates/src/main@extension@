@@ -1,0 +1,14 @@
+/*!
+ * @file main{{ extension }}
+ *
+ * @copyright (C){% now "Y" %} Red Lion Controls, Inc. All rights reserved. Red Lion, the Red Lion logo and Sixnet are registered
+ * trademarks of Red Lion Controls, Inc. All other company and product names are trademarks of their respective owners.
+ */
+
+#include "{{ name }}-cli.h"
+
+// The bare minimum of logic goes here. Because this file has a main function, it can not be linked into any unit test
+// and therefore no logic in this file can be unit tested.
+int main () {
+    return run();
+}

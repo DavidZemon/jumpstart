@@ -59,8 +59,8 @@ def run() -> None:
 
     for root, dirs, filenames in os.walk(TEMPLATES_DIR):
         for filename in filenames:
-            if filename not in blacklist:
-                abs_path_in = os.path.join(root, filename)
+            abs_path_in = os.path.join(root, filename)
+            if all(not abs_path_in.endswith(b) for b in blacklist):  # Should not be in blacklist
                 relative_to_templates = abs_path_in[len(TEMPLATES_DIR) + 1:]
                 with open(abs_path_in, 'r') as f:
                     t = Template(f.read())
@@ -149,12 +149,12 @@ def get_computed_options(options: Dict[str, any]) -> Dict[str, any]:
 
 def get_blacklisted_files(options: Dict[str, any]) -> List[str]:
     blacklist = []
-    if options['executable']:
-        if not options['library']:
-            blacklist.append('@name@-cli@extension@')
-    else:
+    if not options['executable']:
         blacklist.append('main@extension@')
         blacklist.append('@name@-cli@extension@')
+        blacklist.append('@name@-cli.h')
+    if not options['cxx']:
+        blacklist.append('FindGMock.cmake')
     return blacklist
 
 

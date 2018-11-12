@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.3)
 
+{% if cxx %}
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMakeModules"){% endif %}
 file(STRINGS "version.txt" VERSION)
 project({{ name }} VERSION ${VERSION})
 
@@ -29,4 +31,4 @@ if (WSBUDOCGEN_FOUND)
             STRIP_INC_PATH "include")
 endif ()
 
-include(@NAME@CPack.cmake)
+include({{ name }}CPack.cmake)

@@ -22,4 +22,4 @@ function(create_test NAME)
     add_dependencies(test-all ${NAME})
 endfunction()
 
-create_test({{ name }}Test {{ name }}Test{{ extension }})
+create_test({{ name }}Test {{ name }}Test.cpp)
