@@ -95,7 +95,9 @@ def parse_args() -> argparse.Namespace:
             parser.add_argument('-' + option.short_name, '--' + option.long_name, type=option.validator,
                                 help=option.cli_help)
 
-    parser.add_argument('--defaults', action='store_true', help='Use all default. Do not prompt any questions.')
+    parser.add_argument('--defaults', action='store_true',
+                        help='Do not prompt any questions - use default values for any option not provided on the '
+                             'command line.')
 
     return parser.parse_args()
 
