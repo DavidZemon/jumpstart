@@ -1,54 +1,15 @@
 /*!
- * @file redio2.c
- * @copyright (C)2018 Red Lion Controls, Inc. All rights reserved. Red Lion, the Red Lion logo and Sixnet are registered
+ * @file {{ name }}{{ extension }}
+ *
+ * @copyright (C){% now "Y" %} Red Lion Controls, Inc. All rights reserved. Red Lion, the Red Lion logo and Sixnet are registered
  * trademarks of Red Lion Controls, Inc. All other company and product names are trademarks of their respective owners.
  */
 
-#include <wsbu/redio2.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <termios.h>
-
-CommDriverError openSerialPort(CommDriver* commDriver, const char* deviceFileName) {
-    if(!commDriver) {
-        return CDE_DRIVER_NO_FOUND;
-    }
-
-    const int fd = open(deviceFileName, O_RDWR | O_NOCTTY | O_NDELAY);
-
-    if(fd == -1) {
-        return CDE_FAILED_TO_OPEN_PORT;
-    }
-
-    if(!isatty(fd)) {
-        return CDE_DEVICE_NOT_TTY;
-    }
-
-    /* Setting the Baud rate */
-    cfsetispeed(&commDriver->serialPortSettings,B115200); /* Set Read  Speed as 115200 */
-    cfsetospeed(&commDriver->serialPortSettings,B115200); /* Set Write Speed as 115200 */
-
-    /* 8N1 Mode */
-    commDriver->serialPortSettings.c_cflag &= ~PARENB; /* Disables the Parity Enable bit(PARENB),So No Parity */
-    commDriver->serialPortSettings.c_cflag &= ~CSTOPB; /* CSTOPB = 2 Stop bits,here it is cleared so 1 Stop bit */
-    commDriver->serialPortSettings.c_cflag &= ~CSIZE; /* Clears the mask for setting the data size */
-    commDriver->serialPortSettings.c_cflag |=  CS8; /* Set the data bits = 8 */
-
-    /* Setting Time outs */
-    commDriver->serialPortSettings.c_cc[VMIN] = 10; /* Read at least 10 characters */
-    commDriver->serialPortSettings.c_cc[VTIME] = 0; /* Wait indefinetly */
-
-    /* Set the attributes to the termios structure */
-    if(tcsetattr(fd, TCSANOW, &commDriver->serialPortSettings) != 0) {
-        return CDE_SERIAL_SETTINGS;
-    }
-
-    tcflush(fd, TCIFLUSH); /* Discards old data in the rx buffer */
-
-    commDriver->fd = fd;
-
-    return CDE_SUCCESS;
-}
+#include <wsbu/{{ name }}.h>
+{% if cxx %}
+int {{ name }}::add(const int lhs, const int rhs) {
+    return lhs + rhs;
+}{% else %}
+int add(const int lhs, const int rhs) {
+    return lhs + rhs;
+}{% endif %}

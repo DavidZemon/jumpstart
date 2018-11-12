@@ -16,7 +16,7 @@
 extern "C" {
 #endif
 
-void say_hi();
+int add (const int lhs, const int rhs);
 
 #ifdef __cplusplus
 };
@@ -28,14 +28,14 @@ void say_hi();
  *
  * This is a longer description of a very useless class.
  */
-class HelloPrinter {
+class {{ name }}; {
     public:
         /**
-         * Print a short message to stdout
+         * Add two numbers.
          *
-         * The C++ STL is used for printing "Hello" to stdout via the `cout` stream. Isn't that cool?
+         * This is, by far, the fanciest addition you have ever seen.
          */
-        void say_hi ();
+        int add (const int lhs, const int rhs) const;
 };
 
 {% endif %}

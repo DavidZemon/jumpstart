@@ -139,8 +139,10 @@ def get_computed_options(options: Dict[str, any]) -> Dict[str, any]:
 
     if options['cxx']:
         results['extension'] = '.cpp'
+        results['test_package_name'] = 'GMock'
     else:
         results['extension'] = '.c'
+        results['test_package_name'] = 'GTest'
 
     return results
 
