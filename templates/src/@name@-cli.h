@@ -12,5 +12,5 @@ extern "C" {
 int run ();{% if not cxx %}
 
 #ifdef __cplusplus
-};
+}
 #endif{% endif %}

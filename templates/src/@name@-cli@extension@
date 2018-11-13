@@ -8,7 +8,7 @@
 #include <wsbu/{{ name }}.h>{% else %}
 #include "{{ name }}.h"{% endif %}{% if cxx %}
 #include <iostream>{% else %}
-#include <stdlib.h>{% endif %}
+#include <stdio.h>{% endif %}
 
 // Testable logic for the executable goes here
 int run () {{ '{' }}{% if cxx %}

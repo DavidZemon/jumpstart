@@ -19,7 +19,7 @@ extern "C" {
 int add (const int lhs, const int rhs);
 
 #ifdef __cplusplus
-};
+}
 #endif
 {% else %}
 

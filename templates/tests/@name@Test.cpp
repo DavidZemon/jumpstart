@@ -6,7 +6,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <wsbu/{{ name }}.h>
+#include <{% if library %}wsbu/{% endif %}{{ name }}.h>
 
 class {{ name }}Test : public ::testing::Test
 {

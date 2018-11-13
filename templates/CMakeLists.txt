@@ -21,6 +21,11 @@ enable_testing()
 
 option(BUILD_SHARED_LIBS "Build dynamic libraries when on, else static" ON)
 
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_C_FLAGS "-Werror -Wall -Wpedantic -Wconversion")
+set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}")
+
 add_subdirectory(src)
 add_subdirectory(tests)
 {% if library %}
