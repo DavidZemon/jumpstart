@@ -14,12 +14,15 @@ if (CONAN AND EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
     conan_basic_setup(TARGETS)
 endif ()
 
+find_program(VALGRIND_EXE valgrind)
+
 find_package(Doxygen QUIET)
 find_package(WsbuDocGen QUIET)
 
 enable_testing()
 
 option(BUILD_SHARED_LIBS "Build dynamic libraries when on, else static" ON)
+option(TEST_WITH_VALGRIND "Run unit tests with valgrind (if CMAKE_CROSSCOMPILING_EMULATOR is defined, it will override this setting)" OFF)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 11)
