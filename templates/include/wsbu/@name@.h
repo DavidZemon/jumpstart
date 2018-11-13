@@ -34,6 +34,11 @@ class {{ name }} {
          * Add two numbers.
          *
          * This is, by far, the fanciest addition you have ever seen.
+         *
+         * @param[in]   lhs     The left-hand side argument for addition
+         * @param[in]   rhs     The right-hand side argument for addition
+         *
+         * @return      Sum of lhs and rhs
          */
         int add (const int lhs, const int rhs) const;
 };

@@ -44,6 +44,12 @@ OPTIONS = [
     Option('executable', 'e', True, 'When enabled, a default executable target will be created.',
            'Should a default executable target be created')
 ]
+# These are files that I do not wish to have copies of in VCS, but also do not want to create symlinks for due to
+# Windows compatibility. However, the content of the file may end up in two different directories, depending on options.
+# The dictionary is in the form {DESTINATION: SOURCE}
+LINKS = {
+    'src/@name@.h': 'include/wsbu/@name@.h'
+}
 
 
 def run() -> None:
@@ -59,7 +65,7 @@ def run() -> None:
 
     blacklist = get_blacklisted_files(final_options)
 
-    if os.listdir(OUTPUT_DIR):
+    if os.path.exists(OUTPUT_DIR) and os.listdir(OUTPUT_DIR):
         if OUTPUT_DIR == os.path.join(os.getcwd(), 'generated'):
             shutil.rmtree(OUTPUT_DIR)
         else:
@@ -70,15 +76,12 @@ def run() -> None:
             abs_path_in = os.path.join(root, filename)
             if all(not abs_path_in.endswith(b) for b in blacklist):  # Should not be in blacklist
                 relative_to_templates = abs_path_in[len(TEMPLATES_DIR) + 1:]
-                with open(abs_path_in, 'r') as f:
-                    t = Template(f.read())
+                write_file(abs_path_in, relative_to_templates, final_options)
 
-                abs_path_out = os.path.join(OUTPUT_DIR, relative_to_templates)
-                abs_path_out = adjust_output_filename(abs_path_out, final_options)
-                abs_dir_out = os.path.dirname(abs_path_out)
-                os.makedirs(abs_dir_out, exist_ok=True)
-                with open(abs_path_out, 'w') as f:
-                    f.write(t.render(Context(final_options)))
+    for destination, source in LINKS.items():
+        abs_path_in = os.path.join(TEMPLATES_DIR, source)
+        if all(not destination.endswith(b) for b in blacklist):  # Should not be in blacklist
+            write_file(abs_path_in, destination, final_options)
 
 
 def parse_args() -> argparse.Namespace:
@@ -168,11 +171,25 @@ def get_blacklisted_files(options: Dict[str, any]) -> List[str]:
         blacklist.append('@name@-cli.h')
     if not options['cxx']:
         blacklist.append('FindGMock.cmake')
-    if not options['library']:
+    if options['library']:
+        blacklist.append('src/@name@.h')  # Only include one of these headers, never both
+    else:
+        blacklist.append('wsbu/@name@.h')
         blacklist.append('test_package/@name@TestConan.cpp')
         blacklist.append('test_package/CMakeLists.txt')
         blacklist.append('test_package/conanfile.py')
     return blacklist
+
+
+def write_file(abs_path_in: str, relative_output_path: str, options: Dict[str, any]) -> None:
+    with open(abs_path_in, 'r') as f:
+        t = Template(f.read())
+    abs_path_out = os.path.join(OUTPUT_DIR, relative_output_path)
+    abs_path_out = adjust_output_filename(abs_path_out, options)
+    abs_dir_out = os.path.dirname(abs_path_out)
+    os.makedirs(abs_dir_out, exist_ok=True)
+    with open(abs_path_out, 'w') as f:
+        f.write(t.render(Context(options)))
 
 
 def adjust_output_filename(unmolested: str, options: Dict[str, any]) -> str:

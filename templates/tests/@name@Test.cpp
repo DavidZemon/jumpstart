@@ -23,7 +23,7 @@ class {{ name }}Test : public ::testing::Test
         {{ name }} testable;{% endif %}
 };
 
-TEST_F ({{ name }}Test, say_hi) {{ '{' }}{%if cxx %}
+TEST_F ({{ name }}Test, can_add) {{ '{' }}{%if cxx %}
     ASSERT_EQ(3, testable.add(1, 2));{% else %}
     ASSERT_EQ(3, add(1, 2));{% endif %}
 }

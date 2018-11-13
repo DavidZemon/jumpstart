@@ -4,8 +4,9 @@
  * @copyright (C){% now "Y" %} Red Lion Controls, Inc. All rights reserved. Red Lion, the Red Lion logo and Sixnet are registered
  * trademarks of Red Lion Controls, Inc. All other company and product names are trademarks of their respective owners.
  */
-
-#include <wsbu/{{ name }}.h>{% if cxx %}
+{% if library %}
+#include <wsbu/{{ name }}.h>{% else %}
+#include "{{ name }}.h"{% endif %}{% if cxx %}
 #include <iostream>{% else %}
 #include <stdlib.h>{% endif %}
 

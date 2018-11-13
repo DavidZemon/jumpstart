@@ -17,6 +17,7 @@ install(TARGETS {{ lib_target_name }} EXPORT ${PROJECT_NAME}Config DESTINATION l
 {% spaceless %}
 {% if library %}
 add_library({{ name | lower }}-cli-lib STATIC {{ name }}-cli{{ extension }})
+target_include_directories({{ name | lower }}-cli-lib INTERFACE "${CMAKE_CURRENT_LIST_DIR}")
 target_link_libraries({{ name | lower }}-cli-lib {{ lib_target_name }})
 
 add_executable({{ name | lower }} main{{ extension }})
@@ -26,10 +27,7 @@ add_library({{ name | lower }}-lib STATIC
     {{ name }}-cli{{ extension }}
     {{ name }}{{ extension }}
 )
-target_include_directories({{ name | lower }}-lib PUBLIC
-    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
-    $<INSTALL_INTERFACE:include>
-)
+target_include_directories({{ name | lower }}-lib INTERFACE "${CMAKE_CURRENT_LIST_DIR}")
 
 add_executable({{ name | lower }} main{{ extension }})
 target_link_libraries({{ name | lower }} {{ name | lower }}-lib)

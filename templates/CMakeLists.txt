@@ -20,8 +20,8 @@ option(BUILD_SHARED_LIBS "Build dynamic libraries when on, else static" ON)
 
 add_subdirectory(src)
 add_subdirectory(tests)
-
-install(DIRECTORY "include/" DESTINATION include)
+{% if library %}
+install(DIRECTORY "include/" DESTINATION include){% endif %}
 install(EXPORT ${PROJECT_NAME}Config DESTINATION lib/cmake/${PROJECT_NAME})
 
 if (WSBUDOCGEN_FOUND)
