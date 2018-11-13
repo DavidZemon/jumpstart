@@ -1,5 +1,5 @@
 /**
- * @file wsbu/{{ name }}.h
+ * @file {% if library %}wsbu/{% endif %}{{ name }}.h
  *{% if not cxx %}
  * TODO: Describe the module in detail here
  *{% endif %}
