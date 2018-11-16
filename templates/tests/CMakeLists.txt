@@ -23,7 +23,8 @@ function(create_test NAME){% endif %}
             COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} "$<TARGET_FILE:${NAME}>" ${XML_OUTPUT_ARG})
     elseif (VALGRIND_EXE AND TEST_WITH_VALGRIND)
         add_test(NAME ${NAME}
-            COMMAND "${VALGRIND_EXE}" "$<TARGET_FILE:${NAME}>" ${XML_OUTPUT_ARG})
+            COMMAND "${VALGRIND_EXE}" --leak-check=full --leak-resolution=med  --track-origins=yes --vgdb=no
+                --error-exitcode=1 "$<TARGET_FILE:${NAME}>" ${XML_OUTPUT_ARG})
     else ()
         add_test(NAME ${NAME}
             COMMAND "$<TARGET_FILE:${NAME}>" ${XML_OUTPUT_ARG})
