@@ -17,7 +17,7 @@ class {{ name }}Conan(ConanFile):
 
     build_requires = (
         'googletest/1.8.0@wsbu/stable',
-        'wsbu-docgen/[^0.1.0]@wsbu/stable'
+        'wsbu-docgen/[^0.1.3]@wsbu/stable'
     )
 
     exports = 'version.txt'

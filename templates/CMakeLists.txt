@@ -37,7 +37,8 @@ install(EXPORT ${PROJECT_NAME}Config DESTINATION lib/cmake/${PROJECT_NAME})
 
 if (WSBUDOCGEN_FOUND)
     configure_wsbu_doxygen(
-            MAINPAGE README.md
+            MAINPAGE README.md{% if not cxx %}
+            OPTIMIZE_C ON{% endif %}
             INPUT "src" "include"
             STRIP_INC_PATH "include")
 endif ()
