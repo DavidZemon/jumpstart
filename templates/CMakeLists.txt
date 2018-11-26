@@ -12,6 +12,9 @@ option(CONAN "Enable Conan dependency manager" ON)
 if (CONAN AND EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
     include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
     conan_basic_setup(TARGETS)
+    string(REPLACE ";" ":" LINK_FLAGS "${CONAN_LIB_DIRS}")
+    set(CMAKE_SHARED_LINKER_FLAGS "-Wl,-rpath-link,${LINK_FLAGS}"){% if library %}
+    set(CMAKE_EXE_LINKER_FLAGS "-Wl,--disable-new-dtags,-rpath-link,${LINK_FLAGS}"){% endif %}
 endif ()
 
 find_program(VALGRIND_EXE valgrind)
