@@ -36,7 +36,7 @@ add_executable({{ name | lower }} main{{ extension }})
 target_link_libraries({{ name | lower }} {{ name | lower }}-lib)
 {% endif %}
 {% endspaceless %}
-install(TARGETS {{ name | lower }} EXPORT ${PROJECT_NAME}Config DESTINATION bin)
+install(TARGETS {{ name | lower }} DESTINATION bin)
 {% endif %}
 {% endspaceless %}
 {% endspaceless %}
