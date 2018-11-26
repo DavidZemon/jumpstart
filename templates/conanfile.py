@@ -10,9 +10,9 @@ class {{ name }}Conan(ConanFile):
     license = 'Proprietary'
     url = 'https://bitbucket.org/redlionstl/{{ name | lower }}'
     description = '{{ description }}'
-    settings = 'os', 'compiler', 'build_type', 'arch'
+    settings = 'os', 'compiler', 'build_type', 'arch'{% if library %}
     options = {'shared': [True, False]}
-    default_options = 'shared=True'
+    default_options = 'shared=True'{% endif %}
     generators = 'cmake'
 
     build_requires = (
