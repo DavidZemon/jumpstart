@@ -42,7 +42,8 @@ OPTIONS = [
     Option('library', 'l', True, 'When enabled, a default library target will be created.',
            'Should a default library target be created'),
     Option('executable', 'e', True, 'When enabled, a default executable target will be created.',
-           'Should a default executable target be created')
+           'Should a default executable target be created'),
+    Option('tests', 't', True, 'Disable unit test support', 'Should unit test support be included')
 ]
 # These are files that I do not wish to have copies of in VCS, but also do not want to create symlinks for due to
 # Windows compatibility. However, the content of the file may end up in two different directories, depending on options.
@@ -178,6 +179,16 @@ def get_blacklisted_files(options: Dict[str, any]) -> List[str]:
         blacklist.append('test_package/@name@TestConan.cpp')
         blacklist.append('test_package/CMakeLists.txt')
         blacklist.append('test_package/conanfile.py')
+    if not options['tests']:
+        blacklist.append('CMakeModules/FindGMock.cmake')
+        blacklist.append('tests/@name@-cliTest.cpp')
+        blacklist.append('tests/@name@Test.cpp')
+        blacklist.append('tests/CMakeLists.txt')
+    if not options['tests'] and not options['library']:
+        blacklist.append('src/@name@@extension@')
+        blacklist.append('src/@name@.h')
+        blacklist.append('src/@name@-cli@extension@')
+        blacklist.append('src/@name@-cli.h')
     return blacklist
 
 
