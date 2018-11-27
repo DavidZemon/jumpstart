@@ -1,4 +1,4 @@
-/*!
+/**
  * @file {{ name }}Test.cpp
  *
  * @copyright (C){% now "Y" %} Red Lion Controls, Inc. All rights reserved. Red Lion, the Red Lion logo and Sixnet are registered
