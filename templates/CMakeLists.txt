@@ -13,7 +13,7 @@ if (CONAN AND EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
     conan_basic_setup(TARGETS)
     string(REPLACE ";" ":" LINK_FLAGS "${CONAN_LIB_DIRS}"){% if library %}
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-rpath-link,${LINK_FLAGS}"){% endif %}{% if executable or tests %}
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--disable-new-dtags,-rpath-link,${LINK_FLAGS}"){% endif %}
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath-link,${LINK_FLAGS}"){% endif %}
 endif ()
 {% if tests %}
 find_program(VALGRIND_EXE valgrind){% endif %}
@@ -29,7 +29,9 @@ set(EXTRA_FLAGS "-Werror -Wall -Wpedantic -Wconversion")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_FLAGS}"){% if cxx or tests %}
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_FLAGS}"){% endif %}
 set(CMAKE_C_STANDARD 99){% if cxx or tests %}
-set(CMAKE_CXX_STANDARD 11){% endif %}
+set(CMAKE_CXX_STANDARD 11){% endif %}{% if library %}
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined"){% endif %}{% if executable or tests %}
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--disable-new-dtags"){% endif %}
 
 add_subdirectory(src){% if tests %}
 add_subdirectory(tests){% endif %}{% if library %}
