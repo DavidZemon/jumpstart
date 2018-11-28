@@ -16,5 +16,6 @@ indent_size=4
 indent_size=2
 
 # Makefiles must use tabs
-[Makefile]
+[{Makefile.*,mk*.inc,makefile,Makefile,GNUmakefile,*.mk}]
 indent_style = tab
+tab_width=4
