@@ -37,7 +37,10 @@ add_subdirectory(src){% if tests %}
 add_subdirectory(tests){% endif %}{% if library %}
 
 install(DIRECTORY "include/" DESTINATION include)
-install(EXPORT ${PROJECT_NAME}Config DESTINATION lib/cmake/${PROJECT_NAME}){% endif %}
+install(EXPORT ${PROJECT_NAME}Config
+    DESTINATION lib/cmake/${PROJECT_NAME}
+    NAMESPACE WSBU::
+){% endif %}
 
 if (WSBUDOCGEN_FOUND)
     configure_wsbu_doxygen(
