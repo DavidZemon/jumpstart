@@ -1,7 +1,8 @@
 # (C){% now "Y" %} Red Lion Controls, Inc. All rights reserved. Red Lion, the Red Lion logo and Sixnet are registered trademarks
 # of Red Lion Controls, Inc. All other company and product names are trademarks of their respective owners.
 
-find_package({{ test_package_name }} REQUIRED)
+find_package(GTest REQUIRED
+    PATHS "${CONAN_GOOGLETEST_ROOT}")
 
 add_custom_target(test-all
     COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
@@ -13,11 +14,10 @@ function(create_test NAME){% endif %}
         set(XML_OUTPUT_ARG "--gtest_output=xml:${CMAKE_BINARY_DIR}/$ENV{TC_GTEST_OUTPUT_DIR}/${NAME}.xml")
     endif ()
 
-    add_executable(${NAME} ${ARGN})
-    target_include_directories(${NAME} PRIVATE ${{ '{' }}{{ test_package_name | upper }}_INCLUDE_DIRS}){% if library and executable %}
-    target_link_libraries(${NAME} ${LIB} ${{ '{' }}{{ test_package_name | upper }}_BOTH_LIBRARIES} pthread){% elif executable %}
-    target_link_libraries(${NAME} {{ name | lower }}-lib ${{ '{' }}{{ test_package_name | upper }}_BOTH_LIBRARIES} pthread){% else %}
-    target_link_libraries(${NAME} {{ name | lower }} ${{ '{' }}{{ test_package_name | upper }}_BOTH_LIBRARIES} pthread){% endif %}
+    add_executable(${NAME} ${ARGN}){% if library and executable %}
+    target_link_libraries(${NAME} ${LIB} GTest::{{ test_package_name | lower }}_main){% elif executable %}
+    target_link_libraries(${NAME} {{ name | lower }}-lib GTest::{{ test_package_name | lower }}_main){% else %}
+    target_link_libraries(${NAME} {{ name | lower }} GTest::{{ test_package_name | lower }}_main){% endif %}
     if (DEFINED CMAKE_CROSSCOMPILING_EMULATOR)
         add_test(NAME ${NAME}
             COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} "$<TARGET_FILE:${NAME}>" ${XML_OUTPUT_ARG})

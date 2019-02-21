@@ -16,7 +16,7 @@ class {{ name }}Conan(ConanFile):
     generators = 'cmake'
 
     build_requires = (
-        'googletest/1.8.0@wsbu/stable',
+        'googletest/1.8.1@wsbu/stable',
         'wsbu-docgen/[^0.1.3]@wsbu/stable'
     )
 
