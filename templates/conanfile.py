@@ -4,7 +4,7 @@
 from conans import ConanFile, CMake, tools
 
 
-class {{ name }}Conan(ConanFile):
+class {{ name }}(ConanFile):
     name = '{{ name }}'
     version = tools.load("version.txt").strip() + '-1'
     license = 'Proprietary'
@@ -21,7 +21,11 @@ class {{ name }}Conan(ConanFile):
     )
 
     exports = 'version.txt'
-    exports_sources = '*', '!bin/*', '!build/*', '!cmake-build-*', '!.idea/*'
+    scm = {
+        'type': 'git',
+        'url': 'git@bitbucket.org:redlionstl/{{ name | lower }}.git',
+        'revision': 'auto'
+    }
 
     def configure(self):
         # Googletest should never be built as a shared library... it's just all kinds of broken

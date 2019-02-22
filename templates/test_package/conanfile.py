@@ -4,7 +4,7 @@
 from conans import ConanFile, CMake, tools, RunEnvironment
 
 
-class {{ name }}TestConan(ConanFile):
+class {{ name }}Test(ConanFile):
     settings = 'os', 'compiler', 'build_type', 'arch'
     generators = 'cmake'
 
