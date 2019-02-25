@@ -10,9 +10,13 @@ class {{ name }}(ConanFile):
     license = 'Proprietary'
     url = 'https://bitbucket.org/redlionstl/{{ name | lower }}'
     description = '{{ description }}'
-    settings = 'os', 'compiler', 'build_type', 'arch'{% if library %}
-    options = {'shared': [True, False]}
-    default_options = 'shared=True'{% endif %}
+    settings = 'os', 'compiler', 'build_type', 'arch'
+    options = {
+        {% if library %}'shared': [True, False],
+        {% endif %}'with_docs': [True, False],
+        'public_docs': [True, False]
+    }
+    default_options = {% if library %}'shared=True', {% endif %}'with_docs=True', 'public_docs=False'
     generators = 'cmake'
 
     build_requires = (
@@ -32,13 +36,26 @@ class {{ name }}(ConanFile):
         self.options['googletest'].shared = False
 
     def build(self):
-        cmake = CMake(self)
-        cmake.definitions['CMAKE_INSTALL_PREFIX'] = '/'
-        cmake.configure()
+        cmake = self.cmake
+        if self.options.with_docs:
+            cmake_defs = {
+                'WSBU_DOX_INSTALL': 'ON',
+                'WSBU_DOX_PUBLIC': 'ON' if self.options.public_docs else 'OFF'
+            }
+        else:
+            cmake_defs = {}
+        cmake.configure(defs=cmake_defs)
         cmake.build()
+        cmake.test()
 
     def package(self):
-        self.run('cmake --build {0} --target install -- DESTDIR={1}'.format(self.build_folder, self.package_folder)){% if library %}
+        self.cmake.install(args=['--', 'DESTDIR=' + self.package_folder]){% if library %}
 
     def package_info(self):
         self.cpp_info.libs = ['{{ name | lower }}']{% endif %}
+
+    @property
+    def cmake(self):
+        cmake = CMake(self)
+        cmake.definitions['CMAKE_INSTALL_PREFIX'] = '/'
+        return cmake
