@@ -27,7 +27,7 @@ class {{ name }}(ConanFile):
     exports = 'version.txt'
     scm = {
         'type': 'git',
-        'url': 'git@bitbucket.org:redlionstl/{{ name | lower }}.git',
+        'url': 'auto',
         'revision': 'auto'
     }
 
@@ -49,13 +49,11 @@ class {{ name }}(ConanFile):
         cmake.test()
 
     def package(self):
-        self.cmake.install(args=['--', 'DESTDIR=' + self.package_folder]){% if library %}
+        self.cmake.install(){% if library %}
 
     def package_info(self):
         self.cpp_info.libs = ['{{ name | lower }}']{% endif %}
 
     @property
     def cmake(self):
-        cmake = CMake(self)
-        cmake.definitions['CMAKE_INSTALL_PREFIX'] = '/'
-        return cmake
+        return CMake(self)

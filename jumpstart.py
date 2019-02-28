@@ -3,6 +3,7 @@ import argparse
 import os
 import re
 import shutil
+import subprocess
 from typing import Callable, Dict, List
 
 import django
@@ -83,6 +84,18 @@ def run() -> None:
         abs_path_in = os.path.join(TEMPLATES_DIR, source)
         if all(not destination.endswith(b) for b in blacklist):  # Should not be in blacklist
             write_file(abs_path_in, destination, final_options)
+
+    subprocess.check_output(['git', 'init'], cwd=OUTPUT_DIR)
+    subprocess.check_output(['git', 'add', '.'], cwd=OUTPUT_DIR)
+    subprocess.check_output(['git', 'remote', 'add', 'origin',
+                             'git@bitbucket.org:redlionstl/{}.git'.format(final_options['name'].lower())],
+                            cwd=OUTPUT_DIR)
+    subprocess.check_output([
+        'git',
+        '-c', 'user.name=Jumpstart Generator',
+        '-c', 'user.email=noreply@redlion.net',
+        'commit', '-m', 'Generated from wsbu/jumpstart'
+    ], cwd=OUTPUT_DIR)
 
 
 def parse_args() -> argparse.Namespace:
@@ -208,6 +221,10 @@ def adjust_output_filename(unmolested: str, options: Dict[str, any]) -> str:
     for k, v in options.items():
         result = result.replace('@{0}@'.format(k), str(v))
     return result
+
+
+def echo_run(args, cwd) -> None:
+    subprocess.check_output(args, cwd=cwd)
 
 
 if '__main__' == __name__:
