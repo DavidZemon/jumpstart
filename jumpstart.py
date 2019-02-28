@@ -31,12 +31,12 @@ def generate_regex_checker(pattern: str) -> Callable[[str], str]:
 
 OPTIONS = [
     Option('name', 'n', 'NewProject', 'Name of the new project (alphanumeric, dashes, and underscores only)',
-           'Project name', generate_regex_checker('[A-Za-z]+[A-Za-z\d_-].*')),
+           'Project name', generate_regex_checker('[A-Za-z]+[A-Za-z\\d_-].*')),
     Option('description', 'd', 'FIXME: This is my cool new project', 'One-sentence description of the project',
            'Description'),
     Option('contact', 'c', 'First Last <first.last@redlion.net>',
            'Contact name and email address for package maintainer', 'Contact name',
-           generate_regex_checker('[A-Za-z]+ [A-Za-z]+ <[a-z\d\.]+@redlion\.net>')),
+           generate_regex_checker('[A-Za-z]+ [A-Za-z]+ <[a-z\\d\\.]+@redlion\\.net>')),
     Option('cxx', None, True, 'Disable C++ support (C++ is always enabled for unit tests)',
            'Should C++ support be enabled in the primary targets (C++ is always enabled for unit tests)'),
     Option('library', 'l', True, 'When enabled, a default library target will be created.',
