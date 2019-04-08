@@ -9,7 +9,7 @@ project({{ name }}{% if not cxx and not tests %} LANGUAGES C{% endif %} VERSION 
 option(CONAN "Enable Conan dependency manager" ON)
 if (CONAN AND EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
     include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-    conan_basic_setup(TARGETS)
+    conan_basic_setup(TARGETS NO_OUTPUT_DIRS)
     string(REPLACE ";" ":" RPATHS "${CONAN_LIB_DIRS}"){% if library %}
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-rpath-link,${RPATHS}"){% endif %}{% if executable or tests %}
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath-link,${RPATHS}"){% endif %}
