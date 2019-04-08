@@ -1,0 +1,14 @@
+# IDE metadata
+.settings/
+.*project
+.idea/
+*.iml
+
+# Common build directories
+cmake-build*/
+build/
+out/
+bin/
+
+# Temporary files
+*.swp

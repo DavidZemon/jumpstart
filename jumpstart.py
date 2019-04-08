@@ -4,7 +4,9 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 from typing import Callable, Dict, List
+from distutils.spawn import find_executable
 
 import django
 from django.conf import settings
@@ -85,17 +87,22 @@ def run() -> None:
         if all(not destination.endswith(b) for b in blacklist):  # Should not be in blacklist
             write_file(abs_path_in, destination, final_options)
 
-    subprocess.check_output(['git', 'init'], cwd=OUTPUT_DIR)
-    subprocess.check_output(['git', 'add', '.'], cwd=OUTPUT_DIR)
-    subprocess.check_output(['git', 'remote', 'add', 'origin',
-                             'git@bitbucket.org:redlionstl/{}.git'.format(final_options['name'].lower())],
-                            cwd=OUTPUT_DIR)
-    subprocess.check_output([
-        'git',
-        '-c', 'user.name=Jumpstart Generator',
-        '-c', 'user.email=noreply@redlion.net',
-        'commit', '-m', 'Generated from wsbu/jumpstart'
-    ], cwd=OUTPUT_DIR)
+    git_exe = find_executable('git')
+    if git_exe:
+        subprocess.check_output(['git', 'init'], cwd=OUTPUT_DIR)
+        subprocess.check_output(['git', 'add', '.'], cwd=OUTPUT_DIR)
+        subprocess.check_output(['git', 'remote', 'add', 'origin',
+                                 'git@bitbucket.org:redlionstl/{}.git'.format(final_options['name'].lower())],
+                                cwd=OUTPUT_DIR)
+        subprocess.check_output([
+            'git',
+            '-c', 'user.name=Jumpstart Generator',
+            '-c', 'user.email=noreply@redlion.net',
+            'commit', '-m', 'Generated from wsbu/jumpstart'
+        ], cwd=OUTPUT_DIR)
+    else:
+        print('WARNING: git not found. Please run `git init && git add . && git commit` to initialize your repository.',
+              file=sys.stderr)
 
 
 def parse_args() -> argparse.Namespace:
