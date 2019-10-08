@@ -33,10 +33,20 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--disable-new-dtags"){
 add_subdirectory(src){% if tests %}
 add_subdirectory(tests){% endif %}{% if library %}
 
-install(DIRECTORY "include/" DESTINATION include)
+install(PROGRAMS scripts/{{ name }}.init
+        RENAME {{ name }}
+        DESTINATION /etc/rc.d/init.d
+        COMPONENT system
+)
+
+install(DIRECTORY "include/"
+    DESTINATION include
+    COMPONENT dev
+)
 install(EXPORT ${PROJECT_NAME}Config
     DESTINATION lib/cmake/${PROJECT_NAME}
     NAMESPACE WSBU::
+    COMPONENT dev
 ){% endif %}
 
 if (WSBUDOCGEN_FOUND)
