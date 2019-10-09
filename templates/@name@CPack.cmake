@@ -4,9 +4,17 @@
 set(CPACK_GENERATOR
     TGZ
     ZIP
-    DEB
-    RPM
 )
+
+find_program(RPMBUILD rpmbuild)
+if (RPMBUILD)
+    list(APPEND CPACK_GENERATOR RPM)
+endif ()
+
+find_program(DEBUILD debuild)
+if (DEBUILD)
+    list(APPEND CPACK_GENERATOR DEB)
+endif ()
 
 set(CPACK_PROJECT_URL "https://bitbucket.org/redlionstl/{{ name | lower }}")
 set(CPACK_PACKAGE_VENDOR "Red Lion Controls")
