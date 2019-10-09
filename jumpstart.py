@@ -46,6 +46,9 @@ OPTIONS = [
            'Should a default library target be created'),
     Option('executable', 'e', True, 'When enabled, a default executable target will be created.',
            'Should a default executable target be created'),
+    Option('service', 's', True, 'When enabled and combined with --executable, a sample init script will be created.',
+           'Should a sample init script included for use as a service (Only applicable when an executable is being '
+           'created)'),
     Option('tests', 't', True, 'Disable unit test support', 'Should unit test support be included')
 ]
 # These are files that I do not wish to have copies of in VCS, but also do not want to create symlinks for due to
@@ -181,6 +184,8 @@ def get_computed_options(options: Dict[str, any]) -> Dict[str, any]:
         results['extension'] = '.c'
         results['test_package_name'] = 'GTest'
 
+    results['service'] = options['service'] and options['executable']
+
     return results
 
 
@@ -209,6 +214,8 @@ def get_blacklisted_files(options: Dict[str, any]) -> List[str]:
         blacklist.append('src/@name@.h')
         blacklist.append('src/@name@-cli@extension@')
         blacklist.append('src/@name@-cli.h')
+    if not options['service']:
+        blacklist.append('scripts/@name@.init')
     return blacklist
 
 

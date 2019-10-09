@@ -5,6 +5,7 @@ set(CPACK_GENERATOR
     TGZ
     ZIP
     DEB
+    RPM
 )
 
 set(CPACK_PROJECT_URL "https://bitbucket.org/redlionstl/{{ name | lower }}")
@@ -33,6 +34,8 @@ set(CPACK_RPM_PACKAGE_URL                       "${CPACK_PROJECT_URL}")
 set(CPACK_RPM_PACKAGE_REQUIRES                  )
 set(CPACK_RPM_FILE_NAME                         RPM-DEFAULT)
 set(CPACK_RPM_RELOCATION_PATHS                  /)
+set(CPACK_RPM_MAIN_COMPONENT                    production_package)
+set(CPACK_RPM_PACKAGE_RELEASE                   ${CPACK_DEBIAN_PACKAGE_RELEASE})
 
 # Components
 set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
@@ -41,12 +44,11 @@ set(CPACK_RPM_COMPONENT_INSTALL     ON)
 
 set(CPACK_COMPONENT_dev_NAME        "Development headers/libraries")
 set(CPACK_COMPONENT_dev_DESCRIPTION "Headers, static libraries, build system files for {{ name }}")
-set(CPACK_COMPONENT_dev_DEPENDS     "Unspecified")
 
 set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_SOURCE_DIR}/{{ name }}CPackOptions.cmake")
 include(CPack)
 
 # Bundle the system and "Unspecified" components together for the sake fo the DEB and RPM packages
 cpack_add_component_group(production_package)
-cpack_add_component(Unspecified GROUP production_package)
-cpack_add_component(system      GROUP production_package)
+cpack_add_component(Unspecified GROUP production_package){% if service %}
+cpack_add_component(system      GROUP production_package){% endif %}
