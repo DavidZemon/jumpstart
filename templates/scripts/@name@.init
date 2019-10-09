@@ -1,0 +1,65 @@
+#!/bin/bash
+#
+# chkconfig: - 00 90
+# description: {{ name }}
+#
+# processname: {{ name }}
+# config: none
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+RETVAL=0
+prog="{{ name }}"
+pidfile="/var/run/{{ name }}.pid"
+lockfile="/var/lock/subsys/{{ name }}"
+
+start() {
+
+	echo -n $"Starting ${prog}: "
+	if [ -n "$(pidofproc "${prog}")" ]; then
+		echo -n $": already running"
+		echo_failure
+		echo
+		return 1
+	fi
+	daemon "${prog}"
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch "${lockfile}"
+	echo
+	return $RETVAL
+}
+
+stop() {
+	echo -n "Stopping ${prog}: "
+	killproc "${prog}"
+	RETVAL=$?
+	echo
+	[ ${RETVAL} -eq 0 ] && rm -f "${lockfile}" "${pidfile}"
+	return ${RETVAL}
+}
+
+restart() {
+	stop
+	sleep 5
+	start
+}
+
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	restart
+	;;
+  status)
+	status "${prog}"
+	RETVAL=$?
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|restart|status}"
+	exit 1
+esac
