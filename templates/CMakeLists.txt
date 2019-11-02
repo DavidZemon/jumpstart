@@ -24,7 +24,9 @@ enable_testing(){% endif %}{% if library or tests %}
 option(BUILD_SHARED_LIBS "Build dynamic libraries when on, else static" ON){% endif %}{% if tests %}
 option(TEST_WITH_VALGRIND "Run unit tests with valgrind (if CMAKE_CROSSCOMPILING_EMULATOR is defined, it will override this setting)" OFF){% endif %}
 
-add_compile_options(-Werror -Wall -Wpedantic -Wconversion)
+add_compile_options(-Werror -Wall -Wpedantic -Wconversion){% if tests %}
+set(CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} --coverage")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} --coverage"){% endif %}
 set(CMAKE_C_STANDARD 99){% if cxx or tests %}
 set(CMAKE_CXX_STANDARD 11){% endif %}{% if library %}
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined"){% endif %}{% if executable or tests %}
