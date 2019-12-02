@@ -7,12 +7,17 @@ find_package(GTest REQUIRED
 add_custom_target(test-all
     COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
     WORKING_DIRECTORY "${PROJECT_BINARY_DIR}")
+
+find_program(GCOVR_EXE gcovr)
+if (GCOVR_EXE)
+    add_custom_target(coverage
+        COMMAND "${GCOVR_EXE}" --xml --output "${PROJECT_BINARY_DIR}/coverage.xml" --root "${PROJECT_SOURCE_DIR}"
+        DEPENDS test-all)
+endif ()
 {% if library and executable %}
 function(create_test NAME LIB){% else %}
 function(create_test NAME){% endif %}
-    if (DEFINED ENV{TC_GTEST_OUTPUT_DIR})
-        set(XML_OUTPUT_ARG "--gtest_output=xml:${CMAKE_BINARY_DIR}/$ENV{TC_GTEST_OUTPUT_DIR}/${NAME}.xml")
-    endif ()
+    set(XML_OUTPUT_ARG "--gtest_output=xml:${GTEST_OUTPUT_DIR}/${NAME}.xml")
 
     add_executable(${NAME} ${ARGN}){% if library and executable %}
     target_link_libraries(${NAME} ${LIB} GTest::{{ test_package_name | lower }}_main){% elif executable %}
@@ -22,9 +27,12 @@ function(create_test NAME){% endif %}
         add_test(NAME ${NAME}
             COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} "$<TARGET_FILE:${NAME}>" ${XML_OUTPUT_ARG})
     elseif (VALGRIND_EXE AND TEST_WITH_VALGRIND)
+        # Valgrind isn't smart enough to create directories that don't exist
+        file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/valgrind")
         add_test(NAME ${NAME}
             COMMAND "${VALGRIND_EXE}" --leak-check=full --leak-resolution=med  --track-origins=yes --vgdb=no
-                --error-exitcode=1 "$<TARGET_FILE:${NAME}>" ${XML_OUTPUT_ARG})
+                --xml=yes "--xml-file=${CMAKE_BINARY_DIR}/valgrind/${NAME}-valgrind.xml" --error-exitcode=1
+                "$<TARGET_FILE:${NAME}>" ${XML_OUTPUT_ARG})
     else ()
         add_test(NAME ${NAME}
             COMMAND "$<TARGET_FILE:${NAME}>" ${XML_OUTPUT_ARG})
