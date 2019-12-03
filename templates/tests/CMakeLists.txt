@@ -10,8 +10,23 @@ add_custom_target(test-all
 
 find_program(GCOVR_EXE gcovr)
 if (GCOVR_EXE)
-    add_custom_target(coverage
-        COMMAND "${GCOVR_EXE}" --xml --output "${PROJECT_BINARY_DIR}/coverage.xml" --root "${PROJECT_SOURCE_DIR}"
+    if (HTML_COVERAGE_REPORT)
+        set(COVERAGE_TYPE html)
+    else ()
+        set(COVERAGE_TYPE xml)
+    endif ()
+    set(COVERAGE_COMMAND "${GCOVR_EXE}" --${COVERAGE_TYPE} --output "${PROJECT_BINARY_DIR}/coverage.${COVERAGE_TYPE}" --root "${PROJECT_SOURCE_DIR}")
+    set(COVERAGE_COMMENT "Generating test coverage report.")
+
+    # For use after testing was already done as a separate step, allowing you to
+    # generate reports without re-running tests
+    add_custom_target(report-coverage
+        COMMAND ${COVERAGE_COMMAND}
+        COMMENT "${COVERAGE_COMMENT}")
+    # This target will execute tests and generate coverage reports as a single step
+    add_custom_target(test-coverage
+        COMMAND ${COVERAGE_COMMAND}
+        COMMENT "${COVERAGE_COMMENT}"
         DEPENDS test-all)
 endif ()
 {% if library and executable %}
