@@ -20,7 +20,7 @@ class {{ name }}(ConanFile):
     generators = 'cmake'
 
     build_requires = (
-        'googletest/1.8.1@wsbu/stable',
+        'googletest/[^1.8.1]@wsbu/stable',
         'wsbu-docgen/[^0.1.3]@wsbu/stable'
     )
 
@@ -45,8 +45,8 @@ class {{ name }}(ConanFile):
         else:
             cmake_defs = {}
         cmake.configure(defs=cmake_defs)
-        cmake.build()
-        cmake.test()
+        cmake.build(){% if tests %}
+        cmake.test(){% endif %}
 
     def package(self):
         self.cmake.install(){% if library %}
