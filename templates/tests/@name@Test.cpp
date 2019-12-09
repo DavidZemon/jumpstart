@@ -11,19 +11,18 @@
 class {{ name }}Test : public ::testing::Test
 {
     public:
-        {{ name }}Test() {
-            // TODO: Test setup goes here
-        }
+        // TODO: Replace this constructor with any setup functionality you need
+        {{ name }}Test() = default;
 
-        virtual ~{{ name }}Test() {
-            // TODO: Test teardown goes here
-        }{% if cxx %}
+        // TODO: Replace this destructor with any teardown functionality you need
+        ~{{ name }}Test() override = default;{% if cxx %}
 
     protected:
         {{ name }} testable;{% endif %}
 };
 
-TEST_F ({{ name }}Test, can_add) {{ '{' }}{%if cxx %}
+// NOLINTNEXTLINE
+TEST_F ({{ name }}Test, can_add) {{ '{' }} {%if cxx %}
     ASSERT_EQ(3, testable.add(1, 2));{% else %}
     ASSERT_EQ(3, add(1, 2));{% endif %}
 }

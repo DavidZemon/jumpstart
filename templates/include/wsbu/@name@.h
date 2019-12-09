@@ -16,7 +16,7 @@
 extern "C" {
 #endif
 
-int add (const int lhs, const int rhs);
+int add (int lhs, int rhs);
 
 #ifdef __cplusplus
 }
@@ -40,7 +40,7 @@ class {{ name }} {
          *
          * @return      Sum of lhs and rhs
          */
-        int add (const int lhs, const int rhs) const;
+        [[nodiscard]] int add (int lhs, int rhs) const;
 };
 
 {% endif %}
