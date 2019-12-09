@@ -1,0 +1,19 @@
+---
+Checks: '*,
+-clang-diagnostic-error,
+-cppcoreguidelines-non-private-member-variables-in-classes,
+-cppcoreguidelines-pro-bounds-pointer-arithmetic,
+-cppcoreguidelines-special-member-functions,
+-fuchsia-default-arguments-calls,
+-fuchsia-default-arguments-declarations,
+-google-readability-namespace-comments,
+-google-runtime-references,
+-hicpp-avoid-c-arrays,
+-hicpp-special-member-functions,
+-llvm-header-guard,
+-llvm-namespace-comment,
+-misc-non-private-member-variables-in-classes,
+-modernize-avoid-c-arrays,
+-modernize-use-trailing-return-type,
+-readability-implicit-bool-conversion,'
+...

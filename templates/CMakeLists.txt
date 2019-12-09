@@ -44,6 +44,22 @@ set(CMAKE_CXX_STANDARD 17){% endif %}{% if library %}
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined"){% endif %}{% if executable or tests %}
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--disable-new-dtags"){% endif %}
 
+find_program(CPPCHECK_EXE cppcheck)
+if (CPPCHECK_EXE)
+    message("-- Program cppcheck found: ${CPPCHECK_EXE}")
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+    add_custom_target(cppcheck
+        COMMAND "${CPPCHECK_EXE}" --std=c{% if cxx or tests %}++{% endif %}${CMAKE_CXX_STANDARD} --enable=all --quiet "--project=${PROJECT_BINARY_DIR}/compile_commands.json")
+endif ()
+
+find_program(CLANG_TIDY_EXE clang-tidy)
+if (CLANG_TIDY_EXE)
+    message("-- Program clang-tidy found: ${CLANG_TIDY_EXE}")
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+    set(CMAKE_C_CLANG_TIDY "${CLANG_TIDY_EXE}" --quiet "-header-filter=${PROJECT_SOURCE_DIR}/(include/wsbu|src|tests)/.*" -p "${PROJECT_BINARY_DIR}/compile_commands.json"){% if cxx or tests %}
+    set(CMAKE_CXX_CLANG_TIDY "${CMAKE_C_CLANG_TIDY}"){% endif %}
+endif ()
+
 add_subdirectory(src){% if tests %}
 add_subdirectory(tests){% endif %}{% if service %}
 
