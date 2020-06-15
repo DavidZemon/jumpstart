@@ -5,9 +5,11 @@
  * trademarks of Red Lion Controls, Inc. All other company and product names are trademarks of their respective owners.
  */
 
-#include <gtest/gtest.h>
 #include "{{ name }}-cli.h"
 
+#include <gmock/gmock.h>
+
+// NOLINTNEXTLINE
 TEST ({{ name }}CliTest, does_not_fail) {
     ASSERT_EQ(0, run());
 }
