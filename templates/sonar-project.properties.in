@@ -4,12 +4,13 @@
 sonar.projectKey=@PROJECT_NAME@
 sonar.projectVersion=@PROJECT_VERSION@
 sonar.projectBaseDir=@RELATIVE_SOURCE_ROOT@
+sonar.sourceEncoding=utf-8
 sonar.exclusions=@PROJECT_BINARY_DIR@
 sonar.language=c{% if cxx or tests %}++{% endif %}
 sonar.lang.patterns.c=**/.c
 sonar.c{% if not cxx and not tests %}xx{% endif %}.suffixes.headers=-
 sonar.c.includeDirectories=@PROJECT_SOURCE_DIR@/include{% if cxx %}
 sonar.cxx.includeDirectories=@PROJECT_SOURCE_DIR@/include{% endif %}{% if tests %}
-sonar.cxx.xunit.reportPath=@GTEST_OUTPUT_DIR@
+sonar.cxx.xunit.reportPath=@GTEST_OUTPUT_DIR@/*.xml
 sonar.cxx.valgrind.reportPath=@PROJECT_BINARY_DIR@/valgrind/*-valgrind.xml
 sonar.cxx.coverage.reportPath=@PROJECT_BINARY_DIR@/coverage.xml{% endif %}
