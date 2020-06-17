@@ -37,9 +37,12 @@ OPTIONS = [
            'Project name', generate_regex_checker('[A-Za-z]+[A-Za-z\\d_-].*')),
     Option('description', 'd', 'FIXME: This is my cool new project', 'One-sentence description of the project',
            'Description'),
-    Option('contact', 'c', 'First Last <first.last@redlion.net>',
-           'Contact name and email address for package maintainer', 'Contact name',
-           generate_regex_checker('[A-Za-z]+ [A-Za-z]+ <[a-z\\d\\.]+@redlion\\.net>')),
+    Option('contact', 'c', 'First Last <first.last@gmail.com>',
+           'Contact name and email address for package maintainer', 'Package maintainer contact',
+           generate_regex_checker('[A-Za-z]+ [A-Za-z]+ <[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}>')),
+    Option('copyright', None, 'Your Company, Inc.', 'Your name or your company\'s name (used in copyright notice)',
+           'Copyright'),
+    Option('namespace', None, 'yci', 'A short name or acronym, indicating the namespace for this project', 'Namespace'),
     Option('cxx', None, True, 'Disable C++ support (C++ is always enabled for unit tests)',
            'Should C++ support be enabled in the primary targets (C++ is always enabled for unit tests)'),
     Option('library', 'l', True, 'When enabled, a default library target will be created.',
@@ -55,7 +58,7 @@ OPTIONS = [
 # Windows compatibility. However, the content of the file may end up in two different directories, depending on options.
 # The dictionary is in the form {DESTINATION: SOURCE}
 LINKS = {
-    'src/@name@.h': 'include/wsbu/@name@.h'
+    'src/@name@.h': 'include/@namespace@/@name@.h'
 }
 
 
@@ -94,14 +97,11 @@ def run() -> None:
     if git_exe:
         subprocess.check_output(['git', 'init'], cwd=OUTPUT_DIR)
         subprocess.check_output(['git', 'add', '.'], cwd=OUTPUT_DIR)
-        subprocess.check_output(['git', 'remote', 'add', 'origin',
-                                 'git@bitbucket.org:redlionstl/{}.git'.format(final_options['name'].lower())],
-                                cwd=OUTPUT_DIR)
         subprocess.check_output([
             'git',
             '-c', 'user.name=Jumpstart Generator',
-            '-c', 'user.email=noreply@redlion.net',
-            'commit', '-m', 'Generated from wsbu/jumpstart'
+            '-c', 'user.email=noreply@jumpstart.nowhere',
+            'commit', '-m', 'Generated from jumpstart'
         ], cwd=OUTPUT_DIR)
     else:
         print('WARNING: git not found. Please run `git init && git add . && git commit` to initialize your repository.',
@@ -118,8 +118,11 @@ def parse_args() -> argparse.Namespace:
                                     dest=option.long_name.replace('-', '_'), help=option.cli_help)
             else:
                 parser.add_argument('--' + option.long_name, action='store_const', const=True, help=option.cli_help)
-        else:
+        elif option.short_name:
             parser.add_argument('-' + option.short_name, '--' + option.long_name, type=option.validator,
+                                help=option.cli_help)
+        else:
+            parser.add_argument('--' + option.long_name, type=option.validator,
                                 help=option.cli_help)
 
     parser.add_argument('--defaults', action='store_true',
@@ -184,6 +187,8 @@ def get_computed_options(options: Dict[str, any]) -> Dict[str, any]:
         results['extension'] = '.c'
         results['test_package_name'] = 'GTest'
 
+    results['namespace_upper'] = options['namespace'].upper()
+
     results['service'] = options['service'] and options['executable']
 
     return results
@@ -200,7 +205,7 @@ def get_blacklisted_files(options: Dict[str, any]) -> List[str]:
     if options['library']:
         blacklist.append('src/@name@.h')  # Only include one of these headers, never both
     else:
-        blacklist.append('wsbu/@name@.h')
+        blacklist.append('@namespace@/@name@.h')
         blacklist.append('test_package/@name@TestConan.cpp')
         blacklist.append('test_package/CMakeLists.txt')
         blacklist.append('test_package/conanfile.py')

@@ -1,5 +1,17 @@
-# (C){% now "Y" %} Red Lion Controls, Inc. All rights reserved. Red Lion, the Red Lion logo and Sixnet are registered trademarks
-# of Red Lion Controls, Inc. All other company and product names are trademarks of their respective owners.
+# Copyright {% now "Y" %} {{ copyright }}
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+# documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+# persons to whom the Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+# Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+# WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+# OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 cmake_minimum_required(VERSION 3.3)
 
@@ -56,7 +68,7 @@ find_program(CLANG_TIDY_EXE clang-tidy)
 if (CLANG_TIDY_EXE)
     message("-- Program clang-tidy found: ${CLANG_TIDY_EXE}")
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-    set(CMAKE_C_CLANG_TIDY "${CLANG_TIDY_EXE}" --quiet "-header-filter=${PROJECT_SOURCE_DIR}/(include/wsbu|src|tests)/.*" -p "${PROJECT_BINARY_DIR}/compile_commands.json"){% if cxx or tests %}
+    set(CMAKE_C_CLANG_TIDY "${CLANG_TIDY_EXE}" --quiet "-header-filter=${PROJECT_SOURCE_DIR}/(include/{{ namespace }}|src|tests)/.*" -p "${PROJECT_BINARY_DIR}/compile_commands.json"){% if cxx or tests %}
     set(CMAKE_CXX_CLANG_TIDY "${CMAKE_C_CLANG_TIDY}"){% endif %}
 endif ()
 
@@ -75,7 +87,7 @@ install(DIRECTORY "include/"
 )
 install(EXPORT ${PROJECT_NAME}Config
     DESTINATION lib/cmake/${PROJECT_NAME}
-    NAMESPACE WSBU::
+    NAMESPACE {{ namespace_upper }}::
     COMPONENT dev
 ){% endif %}
 

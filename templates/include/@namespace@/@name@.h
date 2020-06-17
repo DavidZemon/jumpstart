@@ -1,6 +1,8 @@
 /**
- * @file {{ name }}-cli{{ extension }}
- *
+ * @file {% if library %}{{ namespace }}/{% endif %}{{ name }}.h
+ *{% if not cxx %}
+ * TODO: Describe the module in detail here
+ *{% endif %}
  * Copyright {% now "Y" %} {{ copyright }}
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
@@ -15,14 +17,42 @@
  * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */{% if not cxx %}
+ */
 
+#pragma once
+
+{% spaceless %}
+{% if not cxx %}
 #ifdef __cplusplus
 extern "C" {
-#endif{% endif %}
+#endif
 
-int run ();{% if not cxx %}
+int add (int lhs, int rhs);
 
 #ifdef __cplusplus
 }
-#endif{% endif %}
+#endif
+{% else %}
+
+/**
+ * This class isn't very useful.
+ *
+ * This is a longer description of a very useless class.
+ */
+class {{ name }} {
+    public:
+        /**
+         * Add two numbers.
+         *
+         * This is, by far, the fanciest addition you have ever seen.
+         *
+         * @param[in]   lhs     The left-hand side argument for addition
+         * @param[in]   rhs     The right-hand side argument for addition
+         *
+         * @return      Sum of lhs and rhs
+         */
+        [[nodiscard]] int add (int lhs, int rhs) const;
+};
+
+{% endif %}
+{% endspaceless %}
