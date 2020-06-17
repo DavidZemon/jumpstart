@@ -28,7 +28,7 @@ if (DEBUILD)
     list(APPEND CPACK_GENERATOR DEB)
 endif ()
 
-set(CPACK_PROJECT_URL "https://bitbucket.org/redlionstl/{{ name | lower }}")
+set(CPACK_PROJECT_URL "{{ homepage }}")
 set(CPACK_PACKAGE_VENDOR "{{ copyright }}")
 set(CPACK_PACKAGE_CONTACT "{{ contact | safe }}")
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})

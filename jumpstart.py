@@ -43,6 +43,7 @@ OPTIONS = [
     Option('copyright', None, 'Your Company, Inc.', 'Your name or your company\'s name (used in copyright notice)',
            'Copyright'),
     Option('namespace', None, 'yci', 'A short name or acronym, indicating the namespace for this project', 'Namespace'),
+    Option('homepage', None, 'https://github.com/YourCompany/new-project', 'Homepage for your project', 'Homepage'),
     Option('cxx', None, True, 'Disable C++ support (C++ is always enabled for unit tests)',
            'Should C++ support be enabled in the primary targets (C++ is always enabled for unit tests)'),
     Option('library', 'l', True, 'When enabled, a default library target will be created.',

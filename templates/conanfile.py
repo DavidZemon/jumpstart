@@ -20,7 +20,7 @@ class {{ name }}(ConanFile):
     name = '{{ name }}'
     version = tools.load("version.txt").strip() + '-1'
     license = 'Proprietary'
-    url = 'https://bitbucket.org/redlionstl/{{ name | lower }}'
+    url = '{{ homepage }}'
     description = '{{ description }}'
     settings = 'os', 'compiler', 'build_type', 'arch'
     options = {
