@@ -40,7 +40,7 @@ endif ()
 {% if tests %}
 find_program(VALGRIND_EXE valgrind){% endif %}
 find_package(Doxygen QUIET)
-find_package(WsbuDocGen QUIET){% if tests %}
+find_package(DocGen QUIET){% if tests %}
 
 enable_testing(){% endif %}{% if library or tests %}
 {% endif %}{% if library %}
@@ -91,8 +91,8 @@ install(EXPORT ${PROJECT_NAME}Config
     COMPONENT dev
 ){% endif %}
 
-if (WSBUDOCGEN_FOUND)
-    configure_wsbu_doxygen(
+if (DOCGEN_FOUND)
+    configure_doxygen(
             MAINPAGE README.md{% if not cxx %}
             OPTIMIZE_C ON{% endif %}
             INPUT "src" "include"

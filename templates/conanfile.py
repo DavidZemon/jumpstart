@@ -32,8 +32,8 @@ class {{ name }}(ConanFile):
     generators = 'cmake'
 
     build_requires = (
-        'googletest/[^1.8.1]@wsbu/stable',
-        'wsbu-docgen/[^0.1.3]@wsbu/stable'
+        'gtest/[^1.10.0]@davidzemon/stable',
+        'docgen/[^0.1.4]@davidzemon/stable'
     )
 
     exports = 'version.txt'
@@ -43,16 +43,12 @@ class {{ name }}(ConanFile):
         'revision': 'auto'
     }
 
-    def configure(self):
-        # Googletest should never be built as a shared library... it's just all kinds of broken
-        self.options['googletest'].shared = False
-
     def build(self):
         cmake = self.cmake
         if self.options.with_docs:
             cmake_defs = {
-                'WSBU_DOX_INSTALL': 'ON',
-                'WSBU_DOX_PUBLIC': 'ON' if self.options.public_docs else 'OFF'
+                'DOX_INSTALL': 'ON',
+                'DOX_PUBLIC': 'ON' if self.options.public_docs else 'OFF'
             }
         else:
             cmake_defs = {}
