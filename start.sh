@@ -7,13 +7,13 @@ if [ "yes" = "${JUMPSTART_PRINT_SCRIPT}" ] ; then
     echo '#!/bin/bash'
     echo 'set -e'
     echo 'set -x'
-    echo 'docker pull davidzemon/jumpstart'
+    echo 'docker pull davidzemon/jumpstart:latest'
     echo 'docker run -it --rm \'
     echo '    -e JUMPSTART_PRINT_SCRIPT=no \'
     echo '    -u "$(id -u):$(id -g)" \'
     echo '    -v "$(pwd):$(pwd)" \'
     echo '    -w "$(pwd)" \'
-    echo '    davidzemon/jumpstart "$@"'
+    echo '    davidzemon/jumpstart:latest "$@"'
 else
-    /usr/bin/python3 /opt/jumpstart/jumpstart.py "$@"
+    /usr/local/bin/python3 /opt/jumpstart/jumpstart.py "$@"
 fi
