@@ -24,8 +24,7 @@ if (CONAN AND EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-rpath-link,${RPATHS}"){% endif %}{% if executable or tests %}
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath-link,${RPATHS}"){% endif %}
 endif ()
-{% if tests %}
-find_program(VALGRIND_EXE valgrind){% endif %}
+
 find_package(Doxygen QUIET)
 find_package(DocGen QUIET){% if tests %}
 

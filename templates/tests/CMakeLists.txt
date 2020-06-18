@@ -2,6 +2,7 @@
 
 find_package(GTest REQUIRED
     PATHS "${CONAN_GOOGLETEST_ROOT}")
+find_program(VALGRIND_EXE valgrind)
 
 add_custom_target(test-all
     COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
