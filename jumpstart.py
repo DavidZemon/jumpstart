@@ -30,7 +30,8 @@ from django.template import Template, Context
 
 from option import Option
 
-TEMPLATES_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'templates')
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 OUTPUT_DIR = os.path.join(os.getcwd(), 'generated') if 'jumpstart.py' in os.listdir('.') else os.getcwd()
 
 
@@ -69,13 +70,16 @@ OPTIONS = [
     Option('service', 's', True, 'When enabled and combined with --executable, a sample init script will be created.',
            'Should a sample init script included for use as a service (Only applicable when an executable is being '
            'created)'),
-    Option('tests', 't', True, 'Disable unit test support', 'Should unit test support be included')
+    Option('tests', 't', True, 'Disable unit test support', 'Should unit test support be included'),
+    Option('license', None, os.path.join(BASE_DIR, 'GeneratedLicense.txt'),
+           'Path to custom license text. See default license file for placeholder syntax.', 'License path',
+           lambda f: os.path.exists(f) and os.path.isfile(os.path.realpath(f)))
 ]
 # These are files that I do not wish to have copies of in VCS, but also do not want to create symlinks for due to
 # Windows compatibility. However, the content of the file may end up in two different directories, depending on options.
 # The dictionary is in the form {DESTINATION: SOURCE}
 LINKS = {
-    'src/@name@.h': 'include/@namespace@/@name@.h'
+    'src/@name@.h': os.path.join(TEMPLATES_DIR, 'include/@namespace@/@name@.h')
 }
 
 
@@ -92,12 +96,14 @@ def run() -> None:
 
     blacklist = get_blacklisted_files(final_options)
 
+    # Handle the case where the output directory already exists
     if os.path.exists(OUTPUT_DIR) and os.listdir(OUTPUT_DIR):
         if OUTPUT_DIR == os.path.join(os.getcwd(), 'generated'):
             shutil.rmtree(OUTPUT_DIR)
         else:
             raise Exception('Current directory MUST be empty. Please empty it or create a new directory.')
 
+    # Write all template files to output directory
     for root, dirs, filenames in os.walk(TEMPLATES_DIR):
         for filename in filenames:
             abs_path_in = os.path.join(root, filename)
@@ -105,11 +111,16 @@ def run() -> None:
                 relative_to_templates = abs_path_in[len(TEMPLATES_DIR) + 1:]
                 write_file(abs_path_in, relative_to_templates, final_options)
 
+    # Write all "linked" files to output directory
     for destination, source in LINKS.items():
         abs_path_in = os.path.join(TEMPLATES_DIR, source)
         if all(not destination.endswith(b) for b in blacklist):  # Should not be in blacklist
             write_file(abs_path_in, destination, final_options)
 
+    # Write license file
+    write_file(final_options['license'], 'LICENSE', final_options)
+
+    # Initialize Git repo and perform first commit
     git_exe = find_executable('git')
     if git_exe:
         subprocess.check_output(['git', 'init'], cwd=OUTPUT_DIR)
@@ -208,6 +219,13 @@ def get_computed_options(options: Dict[str, any]) -> Dict[str, any]:
 
     results['service'] = options['service'] and options['executable']
 
+    # Compute license text
+    with open(options['license'], 'r') as f:
+        license_template_text = f.read().strip()
+        results['license_text'] = Template(license_template_text).render(Context(options))
+    results['license_text_for_script'] = os.linesep.join(['# ' + line for line in results['license_text'].splitlines()])
+    results['license_text_for_cxx'] = os.linesep.join([' * ' + line for line in results['license_text'].splitlines()])
+
     return results
 
 
@@ -249,7 +267,7 @@ def write_file(abs_path_in: str, relative_output_path: str, options: Dict[str, a
     abs_dir_out = os.path.dirname(abs_path_out)
     os.makedirs(abs_dir_out, exist_ok=True)
     with open(abs_path_out, 'w') as f:
-        f.write(t.render(Context(options)))
+        f.write(t.render(Context(options, autoescape=False)))
 
 
 def adjust_output_filename(unmolested: str, options: Dict[str, any]) -> str:
