@@ -6,20 +6,37 @@ Generate a C/C++ project using a modern development environment
 Instructions
 ------------
 
-1. Acquire the Docker wrapper script by cloning the project
+1. Run the jumpstart image once to pull the latest image and print the initial
+   help text:
+   ```sh
+   docker run --rm davidzemon/jumpstart
    ```
-   git clone https://github.com/DavidZemon/jumpstart.git
+2. The following help text will be printed (or something similar, if that README
+   is out of date):
+   ```txt
+   Welcome to jumpstart! The recommended way to execute jumpstart is by
+   saving these lines to a script named 'jumpstart'.
+
+   #!/bin/bash
+   set -e
+   set -x
+   docker pull davidzemon/jumpstart
+   docker run -it --rm \
+       -e JUMPSTART_PRINT_SCRIPT=no \
+       -u "$(id -u):$(id -g)" \
+       -v "$(pwd):$(pwd)" \
+       -w "$(pwd)" \
+       davidzemon/jumpstart "$@"
    ```
-2. Create a symlink in your `bin` directory to the Docker wrapper script
-   ```
-   ln -s ~/jumpstart/docker-jumpstart ~/bin/docker-jumpstart
-   ```
-3. Create an empty directory for your new project and run the Docker wrapper
-   script
+   As the instructions explain, create a script on your $PATH with this content.
+   Be sure to make the script executable with a `chmod +x ~/bin/jumpstart`,
+   substituting `~/bin/jumpstart` with whatever path you chose for the script.
+3. Create an empty directory for your new project and run the newly created
+   `jumpstart` script
    ```
    mkdir ~/sample
    cd ~/sample
-   docker-jumpstart
+   jumpstart
    ```
 4. Answer each interactive prompt to configure your new project. Each prompt
    has a default value in square brackets which will be used if no input is
@@ -35,7 +52,7 @@ non-interactive use of the generator. View the available arguments by invoking
 the Docker wrapper script with the `-h`/`--help` argument:
 
 ```
-docker-jumpstart -h
+jumpstart -h
 ```
 
 ### Accept all defaults
