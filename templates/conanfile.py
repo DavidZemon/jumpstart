@@ -28,7 +28,7 @@ class {{ name }}(ConanFile):
         {% endif %}'with_docs': [True, False],
         'public_docs': [True, False]
     }
-    default_options = {% if library %}'shared=True', {% endif %}'with_docs=True', 'public_docs=False'
+    default_options = {% if library %}'shared=True', {% endif %}'with_docs=True', 'public_docs=True'
     generators = 'cmake'
 
     build_requires = (
