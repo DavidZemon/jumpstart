@@ -6,8 +6,8 @@ file(STRINGS "version.txt" VERSION)
 project({{ name }}{% if not cxx and not tests %} LANGUAGES C{% endif %} VERSION ${VERSION})
 
 # Configure SonarQube properties file
-if (DEFINED ENV{TC_GTEST_OUTPUT_DIR})
-    set(GTEST_OUTPUT_DIR "${CMAKE_BINARY_DIR}/$ENV{TC_GTEST_OUTPUT_DIR}")
+if (DEFINED ENV{CI_GTEST_OUTPUT_DIR})
+    set(GTEST_OUTPUT_DIR "${CMAKE_BINARY_DIR}/$ENV{CI_GTEST_OUTPUT_DIR}")
 else ()
     set(GTEST_OUTPUT_DIR "${CMAKE_BINARY_DIR}/gtest_output")
 endif ()
