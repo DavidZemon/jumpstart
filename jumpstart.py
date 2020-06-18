@@ -56,7 +56,7 @@ OPTIONS = [
            'Description'),
     Option('contact', 'c', 'First Last <first.last@gmail.com>',
            'Contact name and email address for package maintainer', 'Package maintainer contact',
-           generate_regex_checker('[A-Za-z]+ [A-Za-z]+ <[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}>')),
+           generate_regex_checker('\\w+ \\w+ <[^@\\s]+@[^@\\s]+\\.[^@\\s]{2,4}>')),
     Option('copyright', None, 'Your Company, Inc.', 'Your name or your company\'s name (used in copyright notice)',
            'Copyright'),
     Option('namespace', None, 'yci', 'A short name or acronym, indicating the namespace for this project', 'Namespace'),
