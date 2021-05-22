@@ -4,8 +4,9 @@
 {{ license_text_for_cxx }}
  */
 
-#include <gtest/gtest.h>
 #include <{% if library %}{{ namespace }}/{% endif %}{{ name }}.h>
+
+#include <gmock/gmock.h>
 
 class {{ name }}Test : public ::testing::Test
 {
