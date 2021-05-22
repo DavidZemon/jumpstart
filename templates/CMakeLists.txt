@@ -1,7 +1,8 @@
 {{ license_text_for_script }}
 
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.9)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}")
 file(STRINGS "version.txt" VERSION)
 project({{ name }}{% if not cxx and not tests %} LANGUAGES C{% endif %} VERSION ${VERSION})
 
@@ -15,18 +16,7 @@ endif ()
 file(RELATIVE_PATH RELATIVE_SOURCE_ROOT "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}")
 configure_file(sonar-project.properties.in sonar-project.properties @ONLY)
 
-# Enable Conan support
-option(CONAN "Enable Conan dependency manager" ON)
-if (CONAN AND EXISTS "${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-    include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-    conan_basic_setup(TARGETS NO_OUTPUT_DIRS)
-    string(REPLACE ";" ":" RPATHS "${CONAN_LIB_DIRS}"){% if library %}
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-rpath-link,${RPATHS}"){% endif %}{% if executable or tests %}
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath-link,${RPATHS}"){% endif %}
-endif ()
-
-find_package(Doxygen QUIET)
-find_package(DocGen QUIET){% if tests %}
+find_package(Doxygen QUIET){% if tests %}
 
 enable_testing(){% endif %}{% if library or tests %}
 {% endif %}{% if library %}
@@ -64,25 +54,21 @@ add_subdirectory(tests){% endif %}{% if service %}
 install(PROGRAMS scripts/{{ name }}.init
         RENAME {{ name }}
         DESTINATION /etc/rc.d/init.d
-        COMPONENT system
-){% endif %}{% if library %}
+        COMPONENT system){% endif %}{% if library %}
 
 install(DIRECTORY "include/"
     DESTINATION include
-    COMPONENT dev
-)
+    COMPONENT dev)
 install(EXPORT ${PROJECT_NAME}Config
     DESTINATION lib/cmake/${PROJECT_NAME}
-    NAMESPACE {{ namespace_upper }}::
-    COMPONENT dev
-){% endif %}
+    NAMESPACE {{ name }}::
+    COMPONENT dev){% endif %}
 
-if (DOCGEN_FOUND)
-    configure_doxygen(
-            MAINPAGE README.md{% if not cxx %}
-            OPTIMIZE_C ON{% endif %}
-            INPUT "src" "include"
-            STRIP_INC_PATH "include")
+if (TARGET Doxygen::doxygen)
+    set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "README.md")
+    set(DOXYGEN_STRIP_INC_PATH "include"){% if not cxx %}
+    set(DOXYGEN_OPTIMIZE_C ON){% endif %}
+    doxygen_add_docs(docs "README.md" "src" "include")
 endif ()
 
 include({{ name }}CPack.cmake)

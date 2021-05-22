@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM python:3.9-slim
 
 ENV JUMPSTART_PRINT_SCRIPT=yes
 

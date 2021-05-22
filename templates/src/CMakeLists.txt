@@ -1,5 +1,7 @@
 {{ license_text_for_script }}
 
+cmake_minimum_required(VERSION 3.9)
+
 {% if library %}
 add_library({{ lib_target_name }} {{ name }}{{ extension }})
 target_include_directories({{ lib_target_name }} PUBLIC

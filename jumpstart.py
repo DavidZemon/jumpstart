@@ -20,8 +20,9 @@ import os
 import re
 import shutil
 import subprocess
+
 import sys
-from typing import Callable, Dict, List
+from typing import Callable, Dict, List, Union
 from distutils.spawn import find_executable
 
 import django
@@ -160,8 +161,8 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def get_options(args: argparse.Namespace) -> Dict[str, any]:
-    final_options = {}
+def get_options(args: argparse.Namespace) -> Dict[str, Union[str, bool]]:
+    final_options: Dict[str, Union[str, bool]] = {}
 
     for option in OPTIONS:
         dest = option.long_name.replace('-', '_')
@@ -200,10 +201,10 @@ def get_options(args: argparse.Namespace) -> Dict[str, any]:
     return final_options
 
 
-def get_computed_options(options: Dict[str, any]) -> Dict[str, any]:
+def get_computed_options(options: Dict[str, Union[str, bool]]) -> Dict[str, Union[str, bool]]:
     results = {}
 
-    if options['library'] and options['executable']:
+    if options['executable']:
         results['lib_target_name'] = options['name'].lower() + '-lib'
     else:
         results['lib_target_name'] = options['name'].lower()
@@ -214,8 +215,6 @@ def get_computed_options(options: Dict[str, any]) -> Dict[str, any]:
     else:
         results['extension'] = '.c'
         results['test_package_name'] = 'GTest'
-
-    results['namespace_upper'] = options['namespace'].upper()
 
     results['service'] = options['service'] and options['executable']
 

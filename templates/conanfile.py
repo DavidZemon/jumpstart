@@ -1,26 +1,27 @@
 {{ license_text_for_script }}
 
+import os
+import shutil
+
 from conans import ConanFile, CMake, tools
 
 
 class {{ name }}(ConanFile):
-    name = '{{ name }}'
+    name = '{{ name | lower }}'
     version = tools.load("version.txt").strip() + '-1'
     license = 'Proprietary'
-    url = '{{ homepage }}'
     description = '{{ description }}'
-    settings = 'os', 'compiler', 'build_type', 'arch'
-    options = {
-        {% if library %}'shared': [True, False],
-        {% endif %}'with_docs': [True, False],
-        'public_docs': [True, False]
-    }
-    default_options = {% if library %}'shared=True', {% endif %}'with_docs=True', 'public_docs=True'
-    generators = 'cmake'
+    homepage = '{{ homepage }}'
+    url = '{{ homepage }}'
+    topics = 'tag1', 'tag2'
+    settings = 'os', 'compiler', 'build_type', 'arch'{% if library %}
+    options = {'shared': [True, False], 'fPIC': [True, False]}
+    default_options = {'shared': False, 'fPIC': True}{% endif %}
+    generators = 'cmake_find_package'
 
     build_requires = (
-        'gtest/[^1.10.0]@davidzemon/stable',
-        'docgen/[^0.1.4]@davidzemon/stable'
+        'gtest/cci.20210126',
+        'doxygen/[^1.8.8]'
     )
 
     exports = 'version.txt'
@@ -32,22 +33,23 @@ class {{ name }}(ConanFile):
 
     def build(self):
         cmake = self.cmake
-        if self.options.with_docs:
-            cmake_defs = {
-                'DOX_INSTALL': 'ON',
-                'DOX_PUBLIC': 'ON' if self.options.public_docs else 'OFF'
-            }
-        else:
-            cmake_defs = {}
-        cmake.configure(defs=cmake_defs)
+        cmake.configure()
         cmake.build(){% if tests %}
         cmake.test(){% endif %}
 
     def package(self):
-        self.cmake.install(){% if library %}
+        self.cmake.install()
+        cmake_config_dir = os.path.join(self.package_folder, 'lib', 'cmake')
+        if os.path.exists(cmake_config_dir):
+            shutil.rmtree(cmake_config_dir)
+
+        os.makedirs(os.path.join(f'{self.package_folder}', 'licenses'))
+        shutil.copy2('LICENSE', os.path.join(f'{self.package_folder}', 'licenses', self.name)){% if library %}
 
     def package_info(self):
-        self.cpp_info.libs = ['{{ name | lower }}']{% endif %}
+        self.cpp_info.set_property('cmake_file_name', '{{ name }}')
+        self.cpp_info.set_property('cmake_target_name', '{{ name }}')
+        self.cpp_info.components['{{ lib_target_name }}'].libs = ['{{ name | lower }}']{% endif %}
 
     @property
     def cmake(self):

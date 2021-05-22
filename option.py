@@ -2,8 +2,8 @@ from typing import Union, Callable, Type
 
 
 class Option(object):
-    def __init__(self, name: str, short_name: Union[str, None], default_value, cli_help: str, interactive_prompt: str,
-                 validator: Callable[[str], any] = None, value_type: Type = None):
+    def __init__(self, name: str, short_name: Union[str, None], default_value: Union[str, bool], cli_help: str,
+                 interactive_prompt: str, validator: Callable[[str], any] = None, value_type: Type = None):
         self.long_name = name
         self.short_name = short_name
         self.default_value = default_value

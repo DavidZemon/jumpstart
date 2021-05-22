@@ -1,7 +1,8 @@
 {{ license_text_for_script }}
 
-find_package(GTest REQUIRED
-    PATHS "${CONAN_GOOGLETEST_ROOT}")
+cmake_minimum_required(VERSION 3.9)
+
+find_package(GTest REQUIRED)
 find_program(VALGRIND_EXE valgrind)
 
 add_custom_target(test-all
@@ -54,8 +55,7 @@ function(create_test NAME){% endif %}
     endif ()
     add_custom_target(test-${NAME}
         COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure -R "${NAME}"
-        DEPENDS ${NAME}
-    )
+        DEPENDS ${NAME})
     add_dependencies(test-all ${NAME})
 endfunction()
 {% if library and executable %}

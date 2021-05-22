@@ -1,11 +1,11 @@
 {{ license_text_for_script }}
 
-from conans import ConanFile, CMake, tools, RunEnvironment
+from conans import ConanFile, CMake
 
 
 class {{ name }}Test(ConanFile):
     settings = 'os', 'compiler', 'build_type', 'arch'
-    generators = 'cmake'
+    generators = 'cmake_find_package'
 
     def build(self):
         cmake = CMake(self)
@@ -13,5 +13,4 @@ class {{ name }}Test(ConanFile):
         cmake.build()
 
     def test(self):
-        with tools.environment_append(RunEnvironment(self).vars):
-            self.run('ctest --output-on-failure')
+        self.run('ctest --output-on-failure', run_environment=True)
