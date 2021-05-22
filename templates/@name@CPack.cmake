@@ -35,6 +35,7 @@ set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS                  ON)
 set(CPACK_DEBIAN_PACKAGE_RELEASE                    1)
 set(CPACK_DEBIAN_FILE_NAME                          DEB-DEFAULT)
 set(CPACK_DEBIAN_PACKAGE_CONTROL_STRICT_PERMISSION  ON)
+set(CPACK_DEBIAN_PRODUCTION_PACKAGE_PACKAGE_NAME    "${PROJECT_NAME}")
 
 # RPM Specific
 set(CPACK_RPM_PACKAGE_URL                       "${CPACK_PROJECT_URL}")
@@ -55,7 +56,7 @@ set(CPACK_COMPONENT_dev_DESCRIPTION "Headers, static libraries, build system fil
 set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_SOURCE_DIR}/{{ name }}CPackOptions.cmake")
 include(CPack)
 
-# Bundle the system and "Unspecified" components together for the sake fo the DEB and RPM packages
+# Bundle the system and "Unspecified" components together for the sake of the DEB and RPM packages
 cpack_add_component_group(production_package)
 cpack_add_component(Unspecified GROUP production_package){% if service %}
 cpack_add_component(system      GROUP production_package){% endif %}
