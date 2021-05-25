@@ -11,8 +11,7 @@ Instructions
    ```sh
    docker run --rm davidzemon/jumpstart
    ```
-2. The following help text will be printed (or something similar, if that README
-   is out of date):
+2. The following help text will be printed:
    ```txt
    Welcome to jumpstart! The recommended way to execute jumpstart is by
    saving these lines to a script named 'jumpstart'.
@@ -28,9 +27,10 @@ Instructions
        -w "$(pwd)" \
        davidzemon/jumpstart "$@"
    ```
-   As the instructions explain, create a script on your $PATH with this content.
-   Be sure to make the script executable with a `chmod +x ~/bin/jumpstart`,
-   substituting `~/bin/jumpstart` with whatever path you chose for the script.
+   As the instructions explain, create a script on your `$PATH` with this
+   content. Be sure to make the script executable with
+   `chmod +x ~/bin/jumpstart`, substituting `~/bin/jumpstart` with whatever
+   path you chose for the script.
 3. Create an empty directory for your new project and run the newly created
    `jumpstart` script
    ```
