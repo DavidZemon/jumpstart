@@ -18,7 +18,7 @@ class {{ name }}Test : public ::testing::Test
         ~{{ name }}Test() override = default;{% if cxx %}
 
     protected:
-        {{ name }} testable;{% endif %}
+        {{ namespace }}::{{ name }} testable;{% endif %}
 };
 
 // NOLINTNEXTLINE

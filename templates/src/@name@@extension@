@@ -7,7 +7,7 @@
 #include <{{ namespace }}/{{ name }}.h>{% else %}
 #include "{{ name }}.h"{% endif %}
 {% if cxx %}
-int {{ name }}::add(const int lhs, const int rhs) const {
+int {{ namespace }}::{{ name }}::add(const int lhs, const int rhs) const {
     return lhs + rhs;
 }{% else %}
 int add(const int lhs, const int rhs) {

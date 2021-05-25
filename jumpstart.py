@@ -41,7 +41,7 @@ def generate_type_checker(validator: Callable[[str], bool]) -> Callable[[str], s
         if validator(value):
             return value
         else:
-            raise argparse.ArgumentTypeError('{0} is an invalid option.'.format(value))
+            raise argparse.ArgumentTypeError(f'{value} is an invalid option.')
 
     return f
 
@@ -50,17 +50,25 @@ def generate_regex_checker(pattern: str) -> Callable[[str], str]:
     return generate_type_checker(lambda s: re.match(pattern, s) is not None)
 
 
+def validate_license_argument(f: str) -> str:
+    if os.path.exists(f) and os.path.isfile(os.path.realpath(f)):
+        return f
+    else:
+        raise argparse.ArgumentTypeError(f'{f} is not a valid path to a license template file')
+
+
 OPTIONS = [
     Option('name', 'n', 'NewProject', 'Name of the new project (alphanumeric, dashes, and underscores only)',
            'Project name', generate_regex_checker('[A-Za-z]+[A-Za-z\\d_-].*')),
     Option('description', 'd', 'FIXME: This is my cool new project', 'One-sentence description of the project',
            'Description'),
-    Option('contact', 'c', 'First Last <first.last@gmail.com>',
+    Option('contact', 'c', 'First Last <first.last@fakery.com>',
            'Contact name and email address for package maintainer', 'Package maintainer contact',
            generate_regex_checker('\\w+ \\w+ <[^@\\s]+@[^@\\s]+\\.[^@\\s]{2,4}>')),
     Option('copyright', None, 'Your Company, Inc.', 'Your name or your company\'s name (used in copyright notice)',
            'Copyright'),
-    Option('namespace', None, 'yci', 'A short name or acronym, indicating the namespace for this project', 'Namespace'),
+    Option('namespace', None, 'YourNamespace',
+           'A short name or acronym, indicating the namespace & header directory for this project', 'Namespace'),
     Option('homepage', None, 'https://github.com/YourCompany/new-project', 'Homepage for your project', 'Homepage'),
     Option('cxx', None, True, 'Disable C++ support (C++ is always enabled for unit tests)',
            'Should C++ support be enabled in the primary targets (C++ is always enabled for unit tests)'),
@@ -72,9 +80,9 @@ OPTIONS = [
            'Should a sample init script included for use as a service (Only applicable when an executable is being '
            'created)'),
     Option('tests', 't', True, 'Disable unit test support', 'Should unit test support be included'),
-    Option('license', None, os.path.join(BASE_DIR, 'GeneratedLicense.txt'),
+    Option('license', None, os.path.join(BASE_DIR, 'LicenseTemplate.txt'),
            'Path to custom license text. See default license file for placeholder syntax.', 'License path',
-           lambda f: os.path.exists(f) and os.path.isfile(os.path.realpath(f)))
+           validate_license_argument)
 ]
 # These are files that I do not wish to have copies of in VCS, but also do not want to create symlinks for due to
 # Windows compatibility. However, the content of the file may end up in two different directories, depending on options.
@@ -219,8 +227,10 @@ def get_computed_options(options: Dict[str, Union[str, bool]]) -> Dict[str, Unio
     results['service'] = options['service'] and options['executable']
 
     # Compute license text
-    with open(options['license'], 'r') as f:
-        license_template_text = f.read().strip()
+    filename = options['license']
+    with open(filename, 'r') as f:
+        content = f.read()
+        license_template_text = content.strip()
         results['license_text'] = Template(license_template_text).render(Context(options))
     results['license_text_for_script'] = os.linesep.join(['# ' + line for line in results['license_text'].splitlines()])
     results['license_text_for_cxx'] = os.linesep.join([' * ' + line for line in results['license_text'].splitlines()])
@@ -265,14 +275,18 @@ def write_file(abs_path_in: str, relative_output_path: str, options: Dict[str, a
     abs_path_out = adjust_output_filename(abs_path_out, options)
     abs_dir_out = os.path.dirname(abs_path_out)
     os.makedirs(abs_dir_out, exist_ok=True)
+
+    content = t.render(Context(options, autoescape=False)).rstrip()
+    stripped_lines = [f'{line.rstrip()}{os.linesep}' for line in content.split(os.linesep)]
+
     with open(abs_path_out, 'w') as f:
-        f.write(t.render(Context(options, autoescape=False)))
+        f.writelines(stripped_lines)
 
 
 def adjust_output_filename(unmolested: str, options: Dict[str, any]) -> str:
     result = unmolested
     for k, v in options.items():
-        result = result.replace('@{0}@'.format(k), str(v))
+        result = result.replace(f'@{k}@', str(v))
     return result
 
 

@@ -11,7 +11,7 @@
 
 // Testable logic for the executable goes here
 int run () {{ '{' }}{% if cxx %}
-    const {{ name }} instance;
+    const {{ namespace }}::{{ name }} instance;
     std::cout << 1 << " + " << 2 << " = " << instance.add(1, 2) << std::endl;{% else %}
     printf("%d + %d = %d", 1, 2, add(1, 2));{% endif %}
     return 0;

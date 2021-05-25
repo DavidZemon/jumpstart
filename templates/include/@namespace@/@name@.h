@@ -21,6 +21,8 @@ int add (int lhs, int rhs);
 #endif
 {% else %}
 
+namespace {{ namespace }} {
+
 /**
  * This class isn't very useful.
  *
@@ -40,6 +42,8 @@ class {{ name }} {
          */
         [[nodiscard]] int add (int lhs, int rhs) const;
 };
+
+}
 
 {% endif %}
 {% endspaceless %}
