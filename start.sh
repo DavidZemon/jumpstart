@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ "yes" = "${JUMPSTART_PRINT_SCRIPT}" ] ; then
+if [ "/do/not/work/here" = "${PWD}" ] ; then
     echo "Welcome to jumpstart! The recommended way to execute jumpstart is by"
     echo "saving these lines to a script named 'jumpstart'."
     echo
@@ -9,7 +9,6 @@ if [ "yes" = "${JUMPSTART_PRINT_SCRIPT}" ] ; then
     echo 'set -x'
     echo 'docker pull davidzemon/jumpstart:latest'
     echo 'docker run -it --rm \'
-    echo '    -e JUMPSTART_PRINT_SCRIPT=no \'
     echo '    -u "$(id -u):$(id -g)" \'
     echo '    -v "$(pwd):$(pwd)" \'
     echo '    -w "$(pwd)" \'
