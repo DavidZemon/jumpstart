@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import subprocess
+from test import test
 
 test_cases = [
     ['--no-library'],
@@ -26,4 +27,4 @@ test_cases = [
 ]
 
 for case in test_cases:
-    subprocess.run(['bash', 'test.sh'] + case, check=True)
+    test(case)
