@@ -29,7 +29,7 @@ set(CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} --coverage")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} --coverage"){% endif %}
 set(CMAKE_C_STANDARD 99){% if cxx or tests %}
 set(CMAKE_CXX_STANDARD 17){% endif %}{% if library %}
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined"){% endif %}
 
 find_program(CPPCHECK_EXE cppcheck)
 if (CPPCHECK_EXE)

@@ -77,7 +77,7 @@ OPTIONS = [
     Option('executable', 'e', True, 'When enabled, a default executable target will be created.',
            'Should a default executable target be created'),
     Option('service', 's', True, 'When enabled and combined with --executable, a sample init script will be created.',
-           'Should a sample init script included for use as a service (Only applicable when an executable is being '
+           'Should a sample init script be included for use as a service (Only applicable when an executable is being '
            'created)'),
     Option('tests', 't', True, 'Disable unit test support', 'Should unit test support be included'),
     Option('license', None, os.path.join(BASE_DIR, 'LicenseTemplate.txt'),
@@ -269,8 +269,12 @@ def get_blacklisted_files(options: Dict[str, any]) -> List[str]:
 
 
 def write_file(abs_path_in: str, relative_output_path: str, options: Dict[str, any]) -> None:
-    with open(abs_path_in, 'r') as f:
-        t = Template(f.read())
+    try:
+        with open(abs_path_in, 'r') as f:
+            t = Template(f.read())
+    except Exception as e:
+        raise Exception(f'Failed to process template file {abs_path_in}') from e
+
     abs_path_out = os.path.join(OUTPUT_DIR, relative_output_path)
     abs_path_out = adjust_output_filename(abs_path_out, options)
     abs_dir_out = os.path.dirname(abs_path_out)
