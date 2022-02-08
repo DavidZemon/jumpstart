@@ -132,7 +132,7 @@ def run() -> None:
     # Initialize Git repo and perform first commit
     git_exe = find_executable('git')
     if git_exe:
-        subprocess.check_output(['git', 'init'], cwd=OUTPUT_DIR)
+        subprocess.check_output(['git', 'init', '--initial-branch', 'main'], cwd=OUTPUT_DIR)
         subprocess.check_output(['git', 'add', '.'], cwd=OUTPUT_DIR)
         subprocess.check_output([
             'git',
