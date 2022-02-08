@@ -21,7 +21,6 @@ Instructions
    set -x
    docker pull davidzemon/jumpstart
    docker run -it --rm \
-       -e JUMPSTART_PRINT_SCRIPT=no \
        -u "$(id -u):$(id -g)" \
        -v "$(pwd):$(pwd)" \
        -w "$(pwd)" \
@@ -33,7 +32,7 @@ Instructions
    path you chose for the script.
 3. Create an empty directory for your new project and run the newly created
    `jumpstart` script
-   ```
+   ```sh
    mkdir ~/sample
    cd ~/sample
    jumpstart
@@ -62,3 +61,10 @@ argument is exposed. Use this (probably with one or two other command-line
 arguments) to quickly generate a project with only minor changes from the
 default template. This can be useful for any number of reasons, including
 comparing exactly what changes when a specific option is modified.
+
+### Provide your own license text
+
+Though the working directory is expected to be empty, there is an exception
+built into jumpstart which allows a file with license text to exist in the
+working directory. Use this as an easy way to provide your own license text via
+the `--license` argument.

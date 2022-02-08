@@ -106,11 +106,23 @@ def run() -> None:
     blacklist = get_blacklisted_files(final_options)
 
     # Handle the case where the output directory already exists
-    if os.path.exists(OUTPUT_DIR) and os.listdir(OUTPUT_DIR):
-        if OUTPUT_DIR == os.path.join(os.getcwd(), 'generated'):
-            shutil.rmtree(OUTPUT_DIR)
-        else:
-            raise Exception('Current directory MUST be empty. Please empty it or create a new directory.')
+    move_license_file = False
+    if os.path.exists(OUTPUT_DIR):
+        existing_files = os.listdir(OUTPUT_DIR)
+        if existing_files:
+            if OUTPUT_DIR == os.path.join(os.getcwd(), 'generated'):
+                shutil.rmtree(OUTPUT_DIR)
+            else:
+                # If the only existing file is the input license file, that's okay because that's the only easy way to
+                # provide a license when run via Docker
+
+                existing_file = os.path.join(OUTPUT_DIR, existing_files[0])
+                input_license = final_options['license']
+                if len(existing_files) == 1 and os.path.samefile(existing_file, input_license):
+                    move_license_file = True
+                else:
+                    raise Exception('An input license file is the only file allow in the output directory. Please empty'
+                                    ' it or create a new directory.')
 
     # Write all template files to output directory
     for root, dirs, filenames in os.walk(TEMPLATES_DIR):
@@ -127,7 +139,20 @@ def run() -> None:
             write_file(abs_path_in, destination, final_options)
 
     # Write license file
-    write_file(final_options['license'], 'LICENSE', final_options)
+    if move_license_file:
+        # If the input license file is not named 'LICENSE', using `write_file()` would leave the original license file
+        # behind. It would then get included (duplicated) in the initial Git commit.
+        tmp_license_filepath = '/tmp/input_license'
+        shutil.copyfile(final_options['license'], tmp_license_filepath)
+        os.remove(final_options['license'])
+        try:
+            write_file(tmp_license_filepath, 'LICENSE', final_options)
+        except BaseException:
+            # If anything goes wrong, be sure to put the input file back
+            shutil.copyfile(tmp_license_filepath, final_options['license'])
+            raise
+    else:
+        write_file(final_options['license'], 'LICENSE', final_options)
 
     # Initialize Git repo and perform first commit
     git_exe = find_executable('git')
