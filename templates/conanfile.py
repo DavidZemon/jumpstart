@@ -50,6 +50,10 @@ class {{ name }}(ConanFile):
     def package_info(self):
         self.cpp_info.set_property('cmake_file_name', '{{ name }}')
         self.cpp_info.set_property('cmake_target_name', '{{ name }}')
+
+        # TODO: to remove in conan v2 once cmake_find_package_* generators removed
+        self.cpp_info.names["cmake_find_package"] = "{{ name }}"
+
         self.cpp_info.components['{{ lib_target_name }}'].libs = ['{{ name | lower }}']{% endif %}
 
     @property
