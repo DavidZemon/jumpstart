@@ -43,7 +43,7 @@ class {{ name }}(ConanFile):
         if os.path.exists(cmake_config_dir):
             shutil.rmtree(cmake_config_dir)
 
-        os.makedirs(os.path.join(f'{self.package_folder}', 'licenses'), True)
+        os.makedirs(os.path.join(f'{self.package_folder}', 'licenses'), exist_ok=True)
         shutil.copy2(os.path.join(self.source_folder, 'LICENSE'),
                      os.path.join(f'{self.package_folder}', 'licenses', self.name)){% if library %}
 
