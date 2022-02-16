@@ -4,6 +4,9 @@ if [ "/do/not/work/here" = "${PWD}" ] ; then
     echo "Welcome to jumpstart! The recommended way to execute jumpstart is by"
     echo "saving these lines to a script named 'jumpstart'."
     echo
+    echo "For detailed instructions, please visit"
+    echo "  https://github.com/DavidZemon/jumpstart"
+    echo
     echo '#!/bin/bash'
     echo 'set -e'
     echo 'set -x'

@@ -16,15 +16,18 @@ Instructions
    Welcome to jumpstart! The recommended way to execute jumpstart is by
    saving these lines to a script named 'jumpstart'.
 
+   For detailed instructions, please visit
+     https://github.com/DavidZemon/jumpstart
+
    #!/bin/bash
    set -e
    set -x
-   docker pull davidzemon/jumpstart
+   docker pull davidzemon/jumpstart:latest
    docker run -it --rm \
        -u "$(id -u):$(id -g)" \
        -v "$(pwd):$(pwd)" \
        -w "$(pwd)" \
-       davidzemon/jumpstart "$@"
+       davidzemon/jumpstart:latest "$@"
    ```
    As the instructions explain, create a script on your `$PATH` with this
    content. Be sure to make the script executable with
